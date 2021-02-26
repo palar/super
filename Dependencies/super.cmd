@@ -48,7 +48,7 @@ set https_proxy=
 set start_page=about:blank
 set chrome_proxy_settings=
 set vlc_proxy_settings=
-set user_agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0
+set user_agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0
 :: if not defined ProgramFiles(x86) set user_agent=%user_agent:Win64; x64=WOW64%
 set bit=64
 set ccleaner=64
@@ -1180,8 +1180,7 @@ for /f "tokens=*" %%x in (%settings_ini%) do (
 )
 set ccleaner_exe=!ccleaner_exe:.exe=%ccleaner%.exe!
 set ccleaner_exe_path=!ccleaner_exe_path:.exe=%ccleaner%.exe!
-:: for %%c in (Downloads\%chrome%-bit\*_chrome_installer.exe) do set chrome_installer=%%~nc
-for %%c in (Downloads\*_chrome_installer.exe) do set chrome_installer=%%~nc
+for %%c in (Downloads\*_chrome_installer*.exe) do set chrome_installer=%%~nc
 for /f "tokens=1* delims=_" %%c in ("%chrome_installer%") do set prodversion=%%c
 for %%l in (Downloads\LibreOfficePortable_*_Multilingual*.paf.exe) do set libreoffice_installer=%%~nl
 for /f "tokens=2* delims=_" %%l in ("%libreoffice_installer%") do set libreoffice_version=%%l
@@ -2260,6 +2259,8 @@ call :shortcut %shortcuts% mpv "--run --mpv" "%mpv_exe_path%"
 :: call :shortcut %shortcuts% MuseScore "--run --musescore" "%musescore_exe_path%"
 call :shortcut %shortcuts% nano "--run --nano" %ComSpec%
 call :shortcut %shortcuts% ngrok "--center ngrok --ngrok" %ComSpec%
+:: call :shortcut %shortcuts% "Node.js (admin)" "--admin-center Node.js --terminal ~q~q --nodejs" "%nodejs_exe_path%"
+:: call :shortcut %shortcuts% Node.js "--center Node.js --terminal ~q~q --nodejs" "%nodejs_exe_path%"
 call :shortcut %shortcuts% Notepad++ "--run --notepad++" "%notepad_exe_path%"
 call :shortcut %shortcuts% OneDrive "--run --app --onedrive"
 :: call :shortcut %shortcuts% "Opera (private)" "--run --opera --private" "%opera_launcher_exe_path%"
@@ -2446,6 +2447,10 @@ if [%2] == [--busybox] (
 if [%2] == [--mingit] (
 	call :require MinGit
 	set PATH=%apps_dir%\MinGit\App\cmd;%apps_dir%\MinGit\App\mingw%mingw%\bin;%apps_dir%\MinGit\App\usr\bin;%PATH:)=^)%
+)
+if [%2] == [--nodejs] (
+	call :require Node.js
+	set PATH=%apps_dir%\Node.js\App;%PATH:)=^)%
 )
 if [%2] == [--portablegit] (
 	call :require PortableGit
