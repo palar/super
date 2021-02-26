@@ -1,4 +1,0 @@
-set linenumbers
-set tabsize 2
-set tabstospaces
-include "/Apps/nano/App/*-w64-mingw32/share/nano/*.nanorc"
