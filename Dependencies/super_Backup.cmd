@@ -1326,7 +1326,7 @@ goto end
 :notes
 echo https://www.7-zip.org/
 echo https://aria2.github.io/ or https://github.com/aria2/aria2/releases/latest
-echo http://www.asio4all.org/ or https://www.asio4all.org/
+echo https://www.asio4all.org/
 echo https://www.audacityteam.org/
 echo https://www.ccleaner.com/ccleaner/download
 echo https://tools.shuax.com/chrome/
