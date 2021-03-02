@@ -17,7 +17,10 @@ for /f "tokens=1,2" %%i in ("%app_name%") do (
 	set app_folder=%%j
 )
 set version=*
-for %%a in (Dependencies\Downloads\%version%_chrome_installer*.exe) do set setup_file=%%a
+set bit=64
+if not defined ProgramFiles(x86) set bit=32
+for %%a in (Dependencies\Downloads\%bit%-bit\%version%_chrome_installer.exe) do set setup_file=%%a
+for %%a in (Dependencies\Downloads\%version%_chrome_installer.exe) do set setup_file=%%a
 set a=%0
 set b=%1
 set c=%2

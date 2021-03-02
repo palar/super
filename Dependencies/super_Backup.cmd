@@ -1180,7 +1180,8 @@ for /f "tokens=*" %%x in (%settings_ini%) do (
 )
 set ccleaner_exe=!ccleaner_exe:.exe=%ccleaner%.exe!
 set ccleaner_exe_path=!ccleaner_exe_path:.exe=%ccleaner%.exe!
-for %%c in (Downloads\*_chrome_installer*.exe) do set chrome_installer=%%~nc
+for %%c in (Downloads\%chrome%-bit\*_chrome_installer.exe) do set chrome_installer=%%~nc
+for %%c in (Downloads\*_chrome_installer.exe) do set chrome_installer=%%~nc
 for /f "tokens=1* delims=_" %%c in ("%chrome_installer%") do set prodversion=%%c
 for %%l in (Downloads\LibreOfficePortable_*_Multilingual*.paf.exe) do set libreoffice_installer=%%~nl
 for /f "tokens=2* delims=_" %%l in ("%libreoffice_installer%") do set libreoffice_version=%%l
