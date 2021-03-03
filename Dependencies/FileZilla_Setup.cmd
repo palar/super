@@ -48,6 +48,7 @@ echo 		^<Setting name="Config Location"^>%apps_dir%\%app_folder%\Data\settings\^
 echo 		^<Setting name="Kiosk mode"^>1^</Setting^>>>%file%
 echo 		^<Setting name="Disable update check"^>1^</Setting^>>>%file%
 echo 		^<Setting name="Cache directory"^>%apps_dir%\%app_folder%\Data\cache\^</Setting^>>>%file%
+echo 		^<Setting name="Preserve timestamps"^>1^</Setting^>>>%file%
 echo 	^</Settings^>>>%file%
 echo ^</FileZilla3^>>>%file%
 goto end

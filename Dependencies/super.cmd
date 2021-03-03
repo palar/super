@@ -755,12 +755,17 @@ goto end
 call :require FileZilla
 call :check-process %filezilla_exe% FileZilla
 if not %process_status% == 0 goto end
+set ORIGINAL_HOME=%HOME%
+set HOME=%~d0\%projects%
+if "%home_dir:"=%" == "%~d0\" set HOME=%home_dir%%projects%
 if exist "%local_filezilla%" goto filezilla_default
 if exist "%local_filezilla_x86%" goto filezilla_default
 start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & rd "%filezilla_config_location%" /q /s & "%filezilla_exe_path%" & rd "%filezilla_config_location%" /q /s & %this% --speak "FileZilla was closed"">nul 2>&1
+set HOME=%ORIGINAL_HOME%
 goto end
 :filezilla_default
 start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %this% --speak "FileZilla was closed"">nul 2>&1
+set HOME=%ORIGINAL_HOME%
 goto end
 
 :firefox
@@ -1933,8 +1938,8 @@ if not exist Data (
 pushd Data
 pushd ..\App\Nginx
 for /f "tokens=1* delims=:" %%a in ("%apps_dir%") do set apps_dir_without_drive_letter=%%b
-set projects_dir=%home_dir%\Projects
-if "%home_dir:"=%" == "%~d0\" set projects_dir=%home_dir%Projects
+set projects_dir=%home_dir%\%projects%
+if "%home_dir:"=%" == "%~d0\" set projects_dir=%home_dir%%projects%
 for /f "tokens=1* delims=:" %%a in ("%projects_dir%") do set projects_dir_without_drive_letter=%%b
 %apps_dir%\BusyBox\App\sed.exe "s/%%apps_dir%%/%apps_dir_without_drive_letter:\=\/%/;s/%%html%%/%apps_dir_without_drive_letter:\=\/%\/%html%/;s/%%html_apps%%/%apps_dir_without_drive_letter:\=\/%\/%html_apps:\=\/%/;s/%%projects_dir%%/%projects_dir_without_drive_letter:\=\/%/" "%settings_dir%\nginx\conf\nginx.conf">conf\nginx.conf
 set server_title=%0-nginx
@@ -2928,8 +2933,8 @@ cd conf
 if not exist httpd.conf_original ren httpd.conf httpd.conf_original
 %apps_dir%\BusyBox\App\sed.exe "s/Listen 80/Listen 80\nListen 2021\nListen 8080/;s/#LoadModule proxy_http_module modules\/mod_proxy_http.so/LoadModule proxy_http_module modules\/mod_proxy_http.so/" httpd.conf_original>httpd.conf
 for /f "tokens=1* delims=:" %%a in ("%apps_dir%") do set apps_dir_without_drive_letter=%%b
-set projects_dir=%home_dir%\Projects
-if "%home_dir:"=%" == "%~d0\" set projects_dir=%home_dir%Projects
+set projects_dir=%home_dir%\%projects%
+if "%home_dir:"=%" == "%~d0\" set projects_dir=%home_dir%%projects%
 for /f "tokens=1* delims=:" %%a in ("%projects_dir%") do set projects_dir_without_drive_letter=%%b
 %apps_dir%\BusyBox\App\sed.exe "s/%%apps_dir%%/%apps_dir_without_drive_letter:\=\/%/;s/%%html%%/%apps_dir_without_drive_letter:\=\/%\/%html%/;s/%%html_apps%%/%apps_dir_without_drive_letter:\=\/%\/%html_apps:\=\/%/;s/%%projects_dir%%/%projects_dir_without_drive_letter:\=\/%/" "%settings_dir%\xampp\apache\conf\extra\httpd-vhosts.conf">extra\httpd-vhosts.conf
 cd..
