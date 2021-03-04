@@ -231,7 +231,7 @@ robocopy "%source%\%html%" %html% /mir /xd filegator
 robocopy "%source%\ngrok" ngrok /mir
 robocopy "%source%\NirCmd" NirCmd /mir
 robocopy "%source%\Psiphon\Data" Psiphon\Data /mir
-robocopy "%source%\Settings" Settings /mir
+robocopy "%source%\Settings" Settings /mir /xf known_hosts
 cd..
 popd
 goto end

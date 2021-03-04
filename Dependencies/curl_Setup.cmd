@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 set cmd_color=f0
 set dependencies_dir=%~dp0
@@ -17,7 +18,11 @@ set version_or_build=*
 set bit=64
 if not defined ProgramFiles(x86) set bit=32
 for %%a in (Dependencies\Downloads\curl-%version_or_build%-win%bit%-mingw.zip) do (
-	for /f "tokens=1* delims=_" %%a in ("%%~na") do set temporary=%%a-win%bit%-mingw
+	for /f "tokens=1,2,3,4* delims=-" %%a in ("%%~na") do (
+		set version=%%b
+		for /f "tokens=1* delims=_" %%a in ("%%b") do set version=%%a
+		set temporary=%%a-!version!-%%c-%%d
+	)
 	set setup_file=%%a
 )
 set a=%0
@@ -44,7 +49,9 @@ echo.
 7z x %setup_file% -o%app_folder%>nul 2>&1
 rd %app_folder%>nul 2>&1
 if not exist %app_folder% goto error
-call :ren %app_folder%\%temporary% App
+cd %app_folder%
+call :ren %temporary% App
+cd..
 echo %app_name% has been successfully installed.
 goto end
 
@@ -89,3 +96,4 @@ set /p pause=Press Enter to continue...
 goto end
 
 :end
+endlocal
