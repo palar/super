@@ -760,7 +760,10 @@ set HOME=%~d0\%projects%
 if "%home_dir:"=%" == "%~d0\" set HOME=%home_dir%%projects%
 if exist "%local_filezilla%" goto filezilla_default
 if exist "%local_filezilla_x86%" goto filezilla_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & rd "%filezilla_config_location%" /q /s & "%filezilla_exe_path%" & rd "%filezilla_config_location%" /q /s & %this% --speak "FileZilla was closed"">nul 2>&1
+if %is_admin% == 0 call :rd "%filezilla_config_location%"
+set filezilla_command=echo.
+:: if %is_admin% == 0 set filezilla_command=rd "%filezilla_config_location%" /q /s
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %filezilla_command% & %this% --speak "FileZilla was closed"">nul 2>&1
 set HOME=%ORIGINAL_HOME%
 goto end
 :filezilla_default
@@ -1322,7 +1325,7 @@ if not %process_status% == 0 (
 )
 if exist "%local_notepad%" goto notepad++_default
 if exist "%local_notepad_x86%" goto notepad++_default
-%apps_dir%\BusyBox\App\sed.exe -i "s/isMaximized=\"no\"/isMaximized=\"yes\"/;s/Wrap=\"no\"/Wrap=\"yes\"/" "%notepad_app_dir%\config.xml"
+%apps_dir%\BusyBox\App\sed.exe -i "s/isMaximized=\"no\"/isMaximized=\"yes\"/;s/Wrap=\"no\"/Wrap=\"yes\"/" "%notepad_app_dir%\config.xml">nul 2>&1
 start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_notepad%" Notepad++_Backup & "%notepad_exe_path%"%input% & rd "%localappdata_notepad%" /q /s & ren "%localappdata_notepad%_Backup" Notepad++ & %this% --speak "Notepad++ was closed"">nul 2>&1
 goto end
 :notepad++_default
