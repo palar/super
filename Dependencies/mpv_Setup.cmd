@@ -5,9 +5,10 @@ set dependencies_dir=%~dp0
 if [%dependencies_dir:~-1%] == [\] set dependencies_dir=%dependencies_dir:~0,-1%
 pushd "%dependencies_dir%\.."
 set apps_dir=%CD%
+set ORIGINAL_PATH=%PATH%
 if "%PATH:~-1%" == ";" set PATH=%PATH:~0,-1%
-if not defined NEW_PATH set NEW_PATH=%PATH%;%apps_dir%\7-Zip\App;%apps_dir%\NirCmd\App
-set PATH=%NEW_PATH%
+set SETUP_PATH=%PATH%;%apps_dir%\7-Zip\App;%apps_dir%\NirCmd\App;
+set PATH=%SETUP_PATH%
 set setup_title=%~n0
 if not "%setup_title:_= %" == "%setup_title%" set setup_title=%setup_title:_= %
 for /f "tokens=1" %%i in ("%setup_title%") do set app_name=%%i
@@ -28,6 +29,7 @@ if defined d set d= %d%
 if [%b%] == [] start %setup_title% cmd /c "color %cmd_color% & nircmd win center title %setup_title%>nul 2>&1 & %a% --wrapper %setup_title% --install"
 call :start %b%%c%%d%
 popd
+set PATH=%ORIGINAL_PATH%
 goto end
 
 :error

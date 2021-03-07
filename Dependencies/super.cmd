@@ -87,8 +87,8 @@ set archive=%self%.zip
 set list=%self%.txt
 set setup=%scripts%\%self%_Setup.cmd
 if "%PATH:~-1%" == ";" set PATH=%PATH:~0,-1%
-if not defined NEW_PATH set NEW_PATH=%apps_dir%;%apps_dir%\7-Zip\App;%apps_dir%\aria2\App;%apps_dir%\balcon\App;%apps_dir%\curl\App\bin;%apps_dir%\FFmpeg\App\bin;%apps_dir%\FLAC\App;%apps_dir%\FluidSynth\App\bin;%apps_dir%\foobar2000\App\encoders;%apps_dir%\HTTrack\App\httrack;%apps_dir%\LAME\App;%apps_dir%\MediaInfo\App;%apps_dir%\MPlayer\App;%apps_dir%\mpv\App;%apps_dir%\nano\App\%nano%-w64-mingw32\bin;%apps_dir%\ngrok\App;%apps_dir%\NirCmd\App;%apps_dir%\Server\App\MariaDB\bin;%apps_dir%\Server\App\PHP;%apps_dir%\Node.js\App;%apps_dir%\png2ico\App;%apps_dir%\pngquant\App;%apps_dir%\qaac\App;%apps_dir%\Ruby\App\bin;%apps_dir%\Sass\App;%apps_dir%\Shotcut\App;%apps_dir%\VNC_Viewer\App;%apps_dir%\Wget\App;%apps_dir%\XAMPP\App\php;%apps_dir%\youtube-dl\App;%apps_dir%\CommonFiles\Microsoft_Visual_C++_2015-2019_Redistributable;%PATH%;
-set PATH=%NEW_PATH%
+if not defined SUPER_PATH set SUPER_PATH=%apps_dir%;%apps_dir%\7-Zip\App;%apps_dir%\aria2\App;%apps_dir%\balcon\App;%apps_dir%\curl\App\bin;%apps_dir%\FFmpeg\App\bin;%apps_dir%\FLAC\App;%apps_dir%\FluidSynth\App\bin;%apps_dir%\foobar2000\App\encoders;%apps_dir%\HTTrack\App\httrack;%apps_dir%\LAME\App;%apps_dir%\MediaInfo\App;%apps_dir%\MPlayer\App;%apps_dir%\mpv\App;%apps_dir%\nano\App\%nano%-w64-mingw32\bin;%apps_dir%\ngrok\App;%apps_dir%\NirCmd\App;%apps_dir%\Server\App\MariaDB\bin;%apps_dir%\Server\App\PHP;%apps_dir%\Node.js\App;%apps_dir%\png2ico\App;%apps_dir%\pngquant\App;%apps_dir%\qaac\App;%apps_dir%\Ruby\App\bin;%apps_dir%\Sass\App;%apps_dir%\Shotcut\App;%apps_dir%\VNC_Viewer\App;%apps_dir%\Wget\App;%apps_dir%\XAMPP\App\php;%apps_dir%\youtube-dl\App;%apps_dir%\CommonFiles\Microsoft_Visual_C++_2015-2019_Redistributable;%PATH%;
+set PATH=%SUPER_PATH%
 goto main
 
 :7-zip
