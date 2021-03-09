@@ -22,8 +22,8 @@ set c=%2
 set d=%3
 if defined c set c= %c%
 if defined d set d= %d%
-:: if [%b%] == [] start /max cmd /c "color %cmd_color% & %a% --wrapper %setup_title% --install"
-if [%b%] == [] start %setup_title% cmd /c "color %cmd_color% & nircmd win center title %setup_title%>nul 2>&1 & %a% --wrapper %setup_title% --install"
+:: if [%b%] == [] start /max cmd /c "color %cmd_color% & %a% wrapper %setup_title% install"
+if [%b%] == [] start %setup_title% cmd /c "color %cmd_color% & nircmd win center title %setup_title%>nul 2>&1 & %a% wrapper %setup_title% install"
 call :start %b%%c%%d%
 popd
 set PATH=%ORIGINAL_PATH%
@@ -59,7 +59,7 @@ goto end
 set first=%1
 set second=%2
 set third=%3
-if defined first set first=%first:--=:%
+if defined first set first=:%first%
 if defined second set second= %second%
 if defined third set third= %third%
 call %first%%second%%third%
@@ -75,7 +75,7 @@ goto end
 set first=%1
 set second=%2
 if defined first set first=%first:"=%
-if defined second set second=%second:--=:%
+if defined second set second=:%second%
 title %first%
 echo.
 echo %first%

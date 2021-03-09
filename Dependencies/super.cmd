@@ -126,20 +126,20 @@ set app_url=%1
 if not defined app_url goto end
 set app=chrome
 set app_mode=app
-if [%app_url%] == [--gmail] set app_url=https://mail.google.com/mail
-if [%app_url%] == [--google-drive] set app_url=https://drive.google.com/
-if [%app_url%] == [--onedrive] set app_url=https://onedrive.live.com/
-if [%app_url%] == [--outlook] set app_url=https://outlook.live.com/
-if [%app_url%] == [--spotify] set app_url=https://open.spotify.com/
-if [%app_url%] == [--youtube-music] set app_url=https://music.youtube.com/
-if [%app_url%] == [--youtube-on-tv] (
+if [%app_url%] == [gmail] set app_url=https://mail.google.com/mail
+if [%app_url%] == [google-drive] set app_url=https://drive.google.com/
+if [%app_url%] == [onedrive] set app_url=https://onedrive.live.com/
+if [%app_url%] == [outlook] set app_url=https://outlook.live.com/
+if [%app_url%] == [spotify] set app_url=https://open.spotify.com/
+if [%app_url%] == [youtube-music] set app_url=https://music.youtube.com/
+if [%app_url%] == [youtube-on-tv] (
 	set "user_agent=Mozilla/5.0 (SMART-TV; LINUX; Tizen 5.5) AppleWebKit/537.36 (KHTML, like Gecko) 69.0.3497.106.1/5.5 TV Safari/537.36"
 	set app=chromium
 	set app_mode=kiosk
 	set app_url=https://www.youtube.com/tv
 )
-if [%app_url%] == [--youtube] set app_url=https://www.youtube.com/
-call :%app% --%app_mode% %app_url%
+if [%app_url%] == [youtube] set app_url=https://www.youtube.com/
+call :%app% %app_mode% %app_url%
 popd
 goto end
 
@@ -184,7 +184,7 @@ goto end
 for %%* in (%apps_dir%) do set destination_folder=%%~n*
 set option=%1
 if not defined option goto backup-and-restore_location
-if [%option%] == [--restore] goto backup-and-restore_from
+if [%option%] == [restore] goto backup-and-restore_from
 :backup-and-restore_from
 set restore_source=
 set /p restore_source=Source: 
@@ -252,7 +252,7 @@ popd
 goto end
 
 :busybox
-cmd /c %self% center BusyBox terminal "" --busybox
+cmd /c %self% center BusyBox terminal "" busybox
 goto end
 
 :ccleaner
@@ -391,12 +391,12 @@ goto checksum_input_file
 call :require "Google Chrome"
 call :sanitize input %1
 set unsanitized_input=%1
+if defined unsanitized_input call :sanitize input %2
 if not defined unsanitized_input set unsanitized_input=%start_page%
-if [%unsanitized_input:~0,2%] == [--] call :sanitize input %2
-if [%unsanitized_input%] == [--app] set chrome_mode=--new-window %unsanitized_input%=
-if [%unsanitized_input%] == [--incognito] set chrome_mode=%unsanitized_input% 
-if [%unsanitized_input%] == [--kiosk] set chrome_mode=%unsanitized_input% 
-if [%unsanitized_input%] == [--tv] set chrome_mode=--new-window --start-fullscreen --app=
+if [%unsanitized_input%] == [app] set chrome_mode=--new-window --%unsanitized_input%=
+if [%unsanitized_input%] == [incognito] set chrome_mode=--%unsanitized_input% 
+if [%unsanitized_input%] == [kiosk] set chrome_mode=--%unsanitized_input% 
+if [%unsanitized_input%] == [tv] set chrome_mode=--new-window --start-fullscreen --app=
 if not defined input set input=%start_page%
 set input= %chrome_mode%%input:&=^&%
 call :check-process "%chrome_exe_path%" "Google Chrome">nul 2>&1
@@ -459,12 +459,12 @@ goto end
 call :require Chromium
 call :sanitize input %1
 set unsanitized_input=%1
+if defined unsanitized_input call :sanitize input %2
 if not defined unsanitized_input set unsanitized_input=%start_page%
-if [%unsanitized_input:~0,2%] == [--] call :sanitize input %2
-if [%unsanitized_input%] == [--app] set chromium_mode=--new-window %unsanitized_input%=
-if [%unsanitized_input%] == [--incognito] set chromium_mode=%unsanitized_input% 
-if [%unsanitized_input%] == [--kiosk] set chromium_mode=%unsanitized_input% 
-if [%unsanitized_input%] == [--tv] set chromium_mode=--new-window --start-fullscreen --app=
+if [%unsanitized_input%] == [app] set chromium_mode=--new-window --%unsanitized_input%=
+if [%unsanitized_input%] == [incognito] set chromium_mode=--%unsanitized_input% 
+if [%unsanitized_input%] == [kiosk] set chromium_mode=--%unsanitized_input% 
+if [%unsanitized_input%] == [tv] set chromium_mode=--new-window --start-fullscreen --app=
 if not defined input set input=%start_page%
 set input= %chromium_mode%%input:&=^&%
 call :check-process "%chromium_exe_path%" Chromium>nul 2>&1
@@ -549,7 +549,7 @@ for %%i in (microsoft, google, mozilla) do (
 		if not defined app_label goto end
 	)
 )
-call :%app_label:--=% %3 %4
+call :%app_label% %3 %4
 goto end
 
 :del
@@ -578,7 +578,7 @@ goto end
 pushd "%apps_dir%"
 call :kill privoxy.exe
 cd %scripts%
-cmd /c Privoxy_Setup.cmd --uninstall
+cmd /c Privoxy_Setup uninstall
 cd..
 call :kill psiphon3.exe
 reg delete %hkcu_software_psiphon3% /f>nul 2>&1
@@ -587,26 +587,26 @@ popd
 goto end
 
 :dns-resolvers
-if "%2" == "--adguard" call :set-dns-resolvers %1 "176.103.130.130,176.103.130.131" "2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff">nul 2>&1
-if "%2" == "--adguard-family-protection" call :set-dns-resolvers %1 "176.103.130.132,176.103.130.134" "2a00:5a60::bad1:0ff,2a00:5a60::bad2:0ff">nul 2>&1
-if "%2" == "--cleanbrowsing-adult-filter" call :set-dns-resolvers %1 "185.228.168.10,185.228.169.11" "2a0d:2a00:1::1,2a0d:2a00:2::1">nul 2>&1
-if "%2" == "--cleanbrowsing-family-filter" call :set-dns-resolvers %1 "185.228.168.168,185.228.169.168" "2a0d:2a00:1::,2a0d:2a00:2::">nul 2>&1
-if "%2" == "--cleanbrowsing-security-filter" call :set-dns-resolvers %1 "185.228.168.9,185.228.169.9" "2a0d:2a00:1::2,2a0d:2a00:2::2">nul 2>&1
-if "%2" == "--cloudflare" call :set-dns-resolvers %1 "1.1.1.1,1.0.0.1" "2606:4700:4700::1111,2606:4700:4700::1001">nul 2>&1
-if "%2" == "--dns.sb" call :set-dns-resolvers %1 "185.222.222.222,185.184.222.222" "2a09::,2a09::1">nul 2>&1
-if "%2" == "--google" call :set-dns-resolvers %1 "8.8.8.8,8.8.4.4" "2001:4860:4860::8888,2001:4860:4860::8844">nul 2>&1
-if "%2" == "--opendns" call :set-dns-resolvers %1 "208.67.222.222,208.67.220.220" "2620:119:35::35,2620:119:53::53">nul 2>&1
-if "%2" == "--opendns-familyshield" call :set-dns-resolvers %1 "208.67.222.123,208.67.220.123" "2620:119:35::123,2620:119:53::123">nul 2>&1
-if "%2" == "--quad9" call :set-dns-resolvers %1 "9.9.9.9,149.112.112.112" "2620:fe::fe,2620:fe::9">nul 2>&1
-if "%2" == "--quad9-secured" call :set-dns-resolvers %1 "9.9.9.11,149.112.112.11" "2620:fe::11,2620:fe::fe:11">nul 2>&1
-if "%2" == "--quad9-unsecured" call :set-dns-resolvers %1 "9.9.9.10,149.112.112.10" "2620:fe::10,2620:fe::fe:10">nul 2>&1
-if "%2" == "--reset" call :set-dns-resolvers %1 "" "">nul 2>&1
+if "%2" == "adguard" call :set-dns-resolvers %1 "176.103.130.130,176.103.130.131" "2a00:5a60::ad1:0ff,2a00:5a60::ad2:0ff">nul 2>&1
+if "%2" == "adguard-family-protection" call :set-dns-resolvers %1 "176.103.130.132,176.103.130.134" "2a00:5a60::bad1:0ff,2a00:5a60::bad2:0ff">nul 2>&1
+if "%2" == "cleanbrowsing-adult-filter" call :set-dns-resolvers %1 "185.228.168.10,185.228.169.11" "2a0d:2a00:1::1,2a0d:2a00:2::1">nul 2>&1
+if "%2" == "cleanbrowsing-family-filter" call :set-dns-resolvers %1 "185.228.168.168,185.228.169.168" "2a0d:2a00:1::,2a0d:2a00:2::">nul 2>&1
+if "%2" == "cleanbrowsing-security-filter" call :set-dns-resolvers %1 "185.228.168.9,185.228.169.9" "2a0d:2a00:1::2,2a0d:2a00:2::2">nul 2>&1
+if "%2" == "cloudflare" call :set-dns-resolvers %1 "1.1.1.1,1.0.0.1" "2606:4700:4700::1111,2606:4700:4700::1001">nul 2>&1
+if "%2" == "dns.sb" call :set-dns-resolvers %1 "185.222.222.222,185.184.222.222" "2a09::,2a09::1">nul 2>&1
+if "%2" == "google" call :set-dns-resolvers %1 "8.8.8.8,8.8.4.4" "2001:4860:4860::8888,2001:4860:4860::8844">nul 2>&1
+if "%2" == "opendns" call :set-dns-resolvers %1 "208.67.222.222,208.67.220.220" "2620:119:35::35,2620:119:53::53">nul 2>&1
+if "%2" == "opendns-familyshield" call :set-dns-resolvers %1 "208.67.222.123,208.67.220.123" "2620:119:35::123,2620:119:53::123">nul 2>&1
+if "%2" == "quad9" call :set-dns-resolvers %1 "9.9.9.9,149.112.112.112" "2620:fe::fe,2620:fe::9">nul 2>&1
+if "%2" == "quad9-secured" call :set-dns-resolvers %1 "9.9.9.11,149.112.112.11" "2620:fe::11,2620:fe::fe:11">nul 2>&1
+if "%2" == "quad9-unsecured" call :set-dns-resolvers %1 "9.9.9.10,149.112.112.10" "2620:fe::10,2620:fe::fe:10">nul 2>&1
+if "%2" == "reset" call :set-dns-resolvers %1 "" "">nul 2>&1
 goto end
 
 :download
 call :require aria2
-if [%1] == [--curl] call :require curl
-if [%1] == [--wget] call :require Wget
+if [%1] == [curl] call :require curl
+if [%1] == [wget] call :require Wget
 cd /d %home_dir%
 :download_location
 set location=
@@ -621,7 +621,7 @@ echo.
 set input_file=
 set /p input_file=File: 
 if not defined input_file goto download_input_file
-if [%1] == [--curl] (
+if [%1] == [curl] (
 	echo.
 	pushd %location%
 	curl --continue-at - --remote-header-name --remote-name --remote-time "%input_file:"=%"
@@ -629,7 +629,7 @@ if [%1] == [--curl] (
 	echo.
 	goto download_input_file
 )
-if [%1] == [--wget] (
+if [%1] == [wget] (
 	echo.
 	wget --continue --directory-prefix=%location% --no-check-certificate --no-hsts --no-if-modified-since --timestamping "%input_file:"=%"
 	goto download_input_file
@@ -710,10 +710,10 @@ goto end
 call :require "Microsoft Edge"
 call :sanitize input %1
 set unsanitized_input=%1
+if defined unsanitized_input call :sanitize input %2
 if not defined unsanitized_input set unsanitized_input=%start_page%
-if [%unsanitized_input:~0,2%] == [--] call :sanitize input %2
-if [%unsanitized_input%] == [--app] set edge_mode=--new-window %unsanitized_input%=
-if [%unsanitized_input%] == [--inprivate] set edge_mode=%unsanitized_input:--=-% 
+if [%unsanitized_input%] == [app] set edge_mode=--new-window --%unsanitized_input%=
+if [%unsanitized_input%] == [inprivate] set edge_mode=-%unsanitized_input% 
 if not defined input set input=%start_page%
 set input= %edge_mode%%input:&=^&%
 call :check-process "%edge_exe_path%" "Microsoft Edge">nul 2>&1
@@ -779,7 +779,7 @@ goto end
 call :require "Mozilla Firefox"
 :: call :require Notepad++
 call :sanitize input %1
-if [%1] == [--private] set firefox_mode=-private-window 
+if [%1] == [private] set firefox_mode=-private-window 
 if defined firefox_mode call :sanitize input %2
 if not defined input set input=%start_page%
 set input= %firefox_mode%%input:&=^&%
@@ -902,7 +902,7 @@ echo user_pref("reader.parse-on-load.enabled", false);>>%firefox_preferences%
 echo user_pref("toolkit.cosmeticAnimations.enabled", false);>>%firefox_preferences%
 :: echo user_pref("view_source.editor.external", true);>>%firefox_preferences%
 :: echo user_pref("view_source.editor.path", "%notepad_exe_path:\=\\%");>>%firefox_preferences%
-call :firefox-extensions --clean
+call :firefox-extensions clean
 if defined install_firefox_extensions call :firefox-extensions "%install_firefox_extensions%"
 set firefox_clean_appdata=echo.
 if %is_admin% == 1 set firefox_clean_appdata=rd "%localappdata_mozilla%" "%locallow_mozilla%" "%appdata_mozilla%" "%programdata_mozilla%" /q /s
@@ -910,10 +910,10 @@ set firefox_command=echo.
 :: if %is_admin% == 0 set firefox_command=rd "%firefox_data_dir%" /q /s
 if exist "%local_firefox%" goto firefox_default
 if exist "%local_firefox_x86%" goto firefox_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_mozilla%" Mozilla_Backup & ren "%locallow_mozilla%" Mozilla_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%programdata_mozilla%" Mozilla_Backup & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & rd "%firefox_distribution_dir%" /q /s & rd "%localappdata_mozilla%" /q /s & ren "%localappdata_mozilla%_Backup" Mozilla & rd "%locallow_mozilla%" /q /s & ren "%locallow_mozilla%_Backup" Mozilla & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%programdata_mozilla%" /q /s & ren "%programdata_mozilla%_Backup" Mozilla & %firefox_clean_appdata% & %firefox_command% & %this% firefox-extensions --clean & reg delete %hkcu_software_mozilla% /f & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_mozilla%" Mozilla_Backup & ren "%locallow_mozilla%" Mozilla_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%programdata_mozilla%" Mozilla_Backup & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% wait "%firefox_exe_path%" & rd "%firefox_distribution_dir%" /q /s & rd "%localappdata_mozilla%" /q /s & ren "%localappdata_mozilla%_Backup" Mozilla & rd "%locallow_mozilla%" /q /s & ren "%locallow_mozilla%_Backup" Mozilla & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%programdata_mozilla%" /q /s & ren "%programdata_mozilla%_Backup" Mozilla & %firefox_clean_appdata% & %firefox_command% & %this% firefox-extensions clean & reg delete %hkcu_software_mozilla% /f & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
 goto end
 :firefox_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & %firefox_command% & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% wait "%firefox_exe_path%" & %firefox_command% & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
 goto end
 
 :firefox-extensions
@@ -921,7 +921,7 @@ set installed_extensions=%1
 if not defined installed_extensions goto end
 set installed_extensions=%installed_extensions:"=%
 call :md "%firefox_extensions_dir%"
-if /i "%installed_extensions%" == "--clean" (
+if /i "%installed_extensions%" == "clean" (
 	call :rd "%firefox_extensions_dir%"
 	goto end
 )
@@ -970,7 +970,7 @@ start %flux_exe% /noshow
 cd..
 cd..
 popd
-if [%1] == [--stop] goto flux-stop
+if [%1] == [stop] goto flux-stop
 goto end
 
 :flux-stop
@@ -1032,7 +1032,7 @@ goto end
 
 :install
 set first=%0
-set first=%first::=--%
+set first=%first::=%
 set second=%1
 if defined second set second= %second%
 call :setup %first%%second%
@@ -1079,11 +1079,10 @@ call :require LibreOffice
 call :sanitize input %1
 if not [%1] == [] (
 	set first=%1
-	if [!first!] == [--reset] goto libreoffice_reset
-	if "!first:~0,2!" == "--" (
-		set app_mode=%1
-		call :sanitize input %2
-	)
+	if [!first!] == [reset] goto libreoffice_reset
+	set app_mode=!first!
+	if not "!app_mode:~0,2!" == "--" set app_mode=--!app_mode!
+	call :sanitize input %2
 )
 if not defined input set input=%app_mode%
 if defined input set input= %input:&=^&%
@@ -1119,7 +1118,7 @@ if not exist intro.png call :ren intro_backup.png intro.png
 if not exist intro_backup.png call :ren intro.png intro_backup.png
 if not exist intro.png call :ren intro_original.png intro.png
 popd
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%libreoffice_exe_path%"%input% & %this% %app_label% --reset & %this% speak "LibreOffice was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%libreoffice_exe_path%"%input% & %this% %app_label% reset & %this% speak "LibreOffice was closed"">nul 2>&1
 goto end
 :libreoffice_reset
 if %is_admin% == 0 robocopy "%libreoffice_default_settings_dir%" "%libreoffice_settings_dir%" /mir 
@@ -1133,21 +1132,20 @@ goto end
 set app_label=%1
 if not defined app_label goto end
 set app_label=%app_label::=%
-set app_label=%app_label:--=%
 set lock_file="%apps_dir%\%app_label%.lock"
 set lock_status=1
 if not exist %lock_file% (
 	set lock_status=0
 	type nul>%lock_file%
 )
-if [%2] == [--unlock] call :del %lock_file%
+if [%2] == [unlock] call :del %lock_file%
 goto end
 
 :main
 if not defined cmd_color set cmd_color=07
 set color=color %cmd_color%
 pushd "%apps_dir%"
-if not exist NirCmd cmd /c %scripts%\NirCmd_Setup.cmd --install>nul 2>&1
+if not exist NirCmd cmd /c %scripts%\NirCmd_Setup install>nul 2>&1
 popd
 call :escape a %0
 call :escape b %1
@@ -1213,7 +1211,7 @@ set vnc_viewer_exe=VNC-Viewer-%vnc_viewer_version%-Windows-%vnc_viewer_bit%bit.e
 set vnc_viewer_exe_path=%vnc_viewer_app_dir%\%vnc_viewer_exe%
 call :md "%TEMP%"
 echo Silence is golden.>"%TEMP%\%self%.tmp"
-:: call :windows-update --disable>nul 2>&1
+:: call :windows-update disable>nul 2>&1
 :: call :kill MpCmdRun.exe
 :: call :kill OneDrive.exe
 :: call :kill OneDriveStandaloneUpdater.exe
@@ -1222,7 +1220,7 @@ if [%b%] == [wrapper] goto start-wrapper
 call :lockfile %b%
 if not %lock_status% == 0 goto end
 call :start %b% %c%%d%%e%%f%
-call :lockfile %b% --unlock
+call :lockfile %b% unlock
 goto end
 
 :md
@@ -1253,7 +1251,7 @@ popd
 goto end
 
 :mingit
-cmd /c %self% center MinGit terminal "" --mingit
+cmd /c %self% center MinGit terminal "" mingit
 goto end
 
 :mozilla
@@ -1374,7 +1372,7 @@ echo https://files.lhmouse.com/nano-win/
 echo https://nginx.org/
 :: echo https://nodejs.org/
 echo https://notepad-plus-plus.org/
-call :random --opera>nul 2>&1
+call :random opera>nul 2>&1
 echo https://download%random_opera%.operacdn.com/pub/opera/desktop/
 echo https://download%random_opera%.operacdn.com/pub/opera_gx/
 echo https://giorgiotani.github.io/PeaZip/peazip-portable.html or https://github.com/giorgiotani/PeaZip/releases/latest
@@ -1426,9 +1424,9 @@ goto end
 call :require Opera
 call :sanitize input %1
 set unsanitized_input=%1
+if defined unsanitized_input call :sanitize input %2
 if not defined unsanitized_input set unsanitized_input=%start_page%
-if [%unsanitized_input:~0,2%] == [--] call :sanitize input %2
-if [%unsanitized_input%] == [--private] set opera_mode=%unsanitized_input% 
+if [%unsanitized_input%] == [private] set opera_mode=--%unsanitized_input% 
 if not defined input set input=%start_page%
 set input= %opera_mode%%input:&=^&%
 for /d %%a in ("%opera_app_dir%\*") do (
@@ -1454,19 +1452,19 @@ set opera_command=echo.
 if exist "%local_opera%" goto opera_default
 if exist "%local_opera_all%" goto opera_default
 if exist "%local_opera_all_x86%" goto opera_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & rd "%appdata_opera%" /q /s & %opera_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% wait "%opera_exe_path%" & rd "%appdata_opera%" /q /s & %opera_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera was closed"">nul 2>&1
 goto end
 :opera_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & %opera_command% & %this% speak "Opera was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% wait "%opera_exe_path%" & %opera_command% & %this% speak "Opera was closed"">nul 2>&1
 goto end
 
 :opera_gx
 call :require "Opera GX"
 call :sanitize input %1
 set unsanitized_input=%1
+if defined unsanitized_input call :sanitize input %2
 if not defined unsanitized_input set unsanitized_input=%start_page%
-if [%unsanitized_input:~0,2%] == [--] call :sanitize input %2
-if [%unsanitized_input%] == [--private] set opera_gx_mode=%unsanitized_input% 
+if [%unsanitized_input%] == [private] set opera_gx_mode=--%unsanitized_input% 
 if not defined input set input=%start_page%
 set input= %opera_gx_mode%%input:&=^&%
 for /d %%a in ("%opera_gx_app_dir%\*") do (
@@ -1492,10 +1490,10 @@ set opera_gx_command=echo.
 if exist "%local_opera_gx%" goto opera_gx_default
 if exist "%local_opera_gx_all%" goto opera_gx_default
 if exist "%local_opera_gx_all_x86%" goto opera_gx_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & rd "%appdata_opera%" /q /s & %opera_gx_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera GX was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% wait "%opera_gx_exe_path%" & rd "%appdata_opera%" /q /s & %opera_gx_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera GX was closed"">nul 2>&1
 goto end
 :opera_gx_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & %opera_gx_command% & %this% speak "Opera GX was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% wait "%opera_gx_exe_path%" & %opera_gx_command% & %this% speak "Opera GX was closed"">nul 2>&1
 goto end
 
 :opera-extensions
@@ -1607,7 +1605,7 @@ popd
 goto pngquant
 
 :portablegit
-cmd /c %self% center PortableGit terminal "" --portablegit
+cmd /c %self% center PortableGit terminal "" portablegit
 goto end
 
 :power-off
@@ -1617,7 +1615,7 @@ call :server-stop
 call :xampp-stop
 call :reset
 set switch=
-if [%1] == [--restart] set switch=r
+if [%1] == [restart] set switch=r
 if not defined switch set switch=s
 shutdown /%switch% /t 0
 goto end
@@ -1710,8 +1708,8 @@ goto end
 :random
 set random_type=%1
 if not defined random_type goto end
-if [%random_opera%] == [--opera] goto random_opera
-if [%random_type%] == [--port] goto random_port
+if [%random_opera%] == [opera] goto random_opera
+if [%random_type%] == [port] goto random_port
 :random_opera
 set random_opera_max=4
 set /a random_opera=%random% %% %random_opera_max% + 1
@@ -1721,7 +1719,7 @@ goto end
 :random_port
 set random_port_max=65535
 set /a random_port=%random% %% %random_port_max% + 49152
-if %random_port% gtr %random_port_max% goto :random_port
+if %random_port% gtr %random_port_max% goto random_port
 echo %random_port%
 goto end
 
@@ -1807,7 +1805,7 @@ for /f "tokens=*" %%i in (%list%) do (
 	aria2c --check-certificate=false --conditional-get=true --max-connection-per-server=16 --out=!file! --remote-time=true !remote_file!>nul 2>&1
 )
 call :server-stop
-start "%0_install" cmd /c "nircmd win min title %0_install & nircmd win hide title %0_install & %setup% --install & del %archive% %dependencies%\%archive%"
+start "%0_install" cmd /c "nircmd win min title %0_install & nircmd win hide title %0_install & %setup% install & del %archive% %dependencies%\%archive%"
 goto end
 :remote-sync_error
 call :server-stop
@@ -1852,7 +1850,7 @@ if not exist %app_folder% (
 	set app_name=%app%
 	set app_name=!app_name:"=!
 	set app_name=!app_name: =_!
-	cmd /c %scripts%\!app_name: =_!_Setup.cmd --install>nul 2>&1
+	cmd /c %scripts%\!app_name: =_!_Setup install>nul 2>&1
 )
 if /i "%app:"=%" == "Soundfonts" (
 	for /f "delims=" %%s in ("%soundfont%") do call :sanitize soundfont "%%~dps%%~nxs"
@@ -1864,7 +1862,7 @@ goto end
 reg delete "%hkcu_software%\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU" /f>nul 2>&1
 reg delete "%hkcu_software%\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags" /f>nul 2>&1
 reg delete %hkcu_software%\Microsoft\Windows\CurrentVersion\Explorer\Modules\GlobalSettings\Sizer /f>nul 2>&1
-if /i not "%1" == "--all" goto reset-end
+if /i not "%1" == "all" goto reset-end
 reg delete %hkcu_software%\Microsoft\Windows\Shell\BagMRU /f>nul 2>&1
 reg delete %hkcu_software%\Microsoft\Windows\Shell\Bags /f>nul 2>&1
 :reset-end
@@ -1873,11 +1871,11 @@ start explorer.exe
 goto end
 
 :restart
-call :power-off --restart
+call :power-off restart
 goto end
 
 :restore
-call :backup-and-restore --restore
+call :backup-and-restore restore
 goto end
 
 :sanitize
@@ -1908,7 +1906,7 @@ goto end
 
 :sass
 call :require Sass
-call :lockfile %0 --unlock
+call :lockfile %0 unlock
 cd /d %home_dir%
 :sass_location
 set location=
@@ -1927,13 +1925,13 @@ goto sass_location
 :server
 call :check-process httpd.exe Apache>nul 2>&1
 if not %process_status% == 0 goto end
-if [%2] == [--start-php] (
+if [%2] == [start-php] (
 	pushd "%apps_dir%"
 	cd Server
 	pushd Data
 	goto server_php
 )
-if [%1] == [--stop] (
+if [%1] == [stop] (
 	nircmd win close title "Server - Super"
 	call :speak "Server was closed"
 	goto server-stop
@@ -1981,7 +1979,7 @@ cd Data
 call :md PHP
 %apps_dir%\BusyBox\App\sed.exe "s/max_execution_time = 30/max_execution_time = 120/;s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/;s/;extension=mysqli/extension=mysqli/;s/;extension_dir = \"ext\"/extension_dir = \"%apps_dir:\=\\%\\Server\\App\\PHP\\ext\"/;s/;extension=openssl/extension=openssl/" ..\App\PHP\php.ini-development>PHP\php.ini
 set server_title=%0-php
-start "%server_title%" cmd /c "nircmd win center title %server_title% & nircmd win min title %server_title% & nircmd win hide title %server_title% & nircmd win activate stitle "Server - Super" & php-cgi -b 127.0.0.1:9000 -c "%CD%\PHP\php.ini" & %this% server %location% --start-php"
+start "%server_title%" cmd /c "nircmd win center title %server_title% & nircmd win min title %server_title% & nircmd win hide title %server_title% & nircmd win activate stitle "Server - Super" & php-cgi -b 127.0.0.1:9000 -c "%CD%\PHP\php.ini" & %this% server %location% start-php"
 cd..
 if [%1] == [] (
 	pushd Data
@@ -2178,7 +2176,7 @@ goto end
 
 :setup
 set switch=%1
-if not defined switch set switch=--install
+if not defined switch set switch=install
 pushd "%apps_dir%"
 for %%i in (%apps%) do (
 	set new_app_name=
@@ -2188,7 +2186,7 @@ for %%i in (%apps%) do (
 	cmd /c %scripts%\!app_name!_Setup.cmd %switch%!new_app_name!>nul 2>&1
 )
 popd
-if [%2] == [--shortcuts] call :shortcuts>nul 2>&1
+if [%2] == [shortcuts] call :shortcuts>nul 2>&1
 goto end
 
 :shortcut
@@ -2214,15 +2212,15 @@ set shortcuts_name=%1
 echo Creating shortcuts, please wait...
 set desktop_shortcuts="~$folder.desktop$"
 call :sanitize shortcuts "%apps_dir%\Shortcuts"
-if not [%shortcuts_name%] == [--desktop] goto shortcuts_main
+if not [%shortcuts_name%] == [desktop] goto shortcuts_main
 if exist %shortcuts% nircmd shortcut %shortcuts% %desktop_shortcuts% Apps
 :: call :shortcut %desktop_shortcuts% "7-Zip File Manager" "run 7-zip" "%sevenzip_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% Chromium "run chromium" "%chromium_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% foobar2000 "run foobar2000" "%foobar2000_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% "Google Chrome" "run chrome" "%chrome_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Calc" "run libreoffice --calc" "%libreoffice_scalc_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Impress" "run libreoffice --impress" "%libreoffice_simpress_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Writer" "run libreoffice --writer" "%libreoffice_swriter_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Calc" "run libreoffice calc" "%libreoffice_scalc_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Impress" "run libreoffice impress" "%libreoffice_simpress_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Writer" "run libreoffice writer" "%libreoffice_swriter_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% "Mozilla Firefox" "run firefox" "%firefox_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% mpv "run mpv" "%mpv_exe_path%"
 :: call :install-and-create-shortcut %desktop_shortcuts% Notepad++ "run notepad++" "%notepad_exe_path%"
@@ -2237,76 +2235,76 @@ call :del "%shortcuts:"=%\*.lnk"
 call :shortcut %shortcuts% 7-Zip "run 7-zip" "%sevenzip_exe_path%"
 call :shortcut %shortcuts% Audacity "run audacity" "%audacity_exe_path%"
 call :shortcut %shortcuts% Backup "center Backup backup" %ComSpec%
-call :shortcut %shortcuts% "BusyBox (admin)" "admin-center BusyBox terminal ~q~q --busybox" "%busybox_exe_path%"
-call :shortcut %shortcuts% BusyBox "center BusyBox terminal ~q~q --busybox" "%busybox_exe_path%"
+call :shortcut %shortcuts% "BusyBox (admin)" "admin-center BusyBox terminal ~q~q busybox" "%busybox_exe_path%"
+call :shortcut %shortcuts% BusyBox "center BusyBox terminal ~q~q busybox" "%busybox_exe_path%"
 call :shortcut %shortcuts% CCleaner "admin-run ccleaner" "%ccleaner_exe_path%"
 call :shortcut %shortcuts% "CD ripper" "center CD_ripper cd-ripper" %ComSpec%
 call :shortcut %shortcuts% Checksum "center Checksum checksum" %ComSpec%
-:: call :shortcut %shortcuts% "Chrome (incognito)" "run chrome --incognito" "%chrome_exe_path%"
+:: call :shortcut %shortcuts% "Chrome (incognito)" "run chrome incognito" "%chrome_exe_path%"
 call :shortcut %shortcuts% Chrome "run chrome" "%chrome_exe_path%"
-:: call :shortcut %shortcuts% "Chromium (incognito)" "run chromium --incognito" "%chromium_exe_path%"
+:: call :shortcut %shortcuts% "Chromium (incognito)" "run chromium incognito" "%chromium_exe_path%"
 call :shortcut %shortcuts% Chromium "run chromium" "%chromium_exe_path%"
 call :shortcut %shortcuts% Delete "center Delete delete" %ComSpec%
 call :shortcut %shortcuts% Disconnect "run disconnect"
 call :shortcut %shortcuts% "Download (aria2)" "center Download_(aria2) download" %ComSpec%
-call :shortcut %shortcuts% "Download (curl)" "center Download_(curl) download --curl" %ComSpec%
-call :shortcut %shortcuts% "Download (Wget)" "center Download_(Wget) download --wget" %ComSpec%
+call :shortcut %shortcuts% "Download (curl)" "center Download_(curl) download curl" %ComSpec%
+call :shortcut %shortcuts% "Download (Wget)" "center Download_(Wget) download wget" %ComSpec%
 :: call :shortcut %shortcuts% Download "center Download download" %ComSpec%
-:: call :shortcut %shortcuts% "Edge (InPrivate)" "run edge --inprivate" "%edge_exe_path%"
+:: call :shortcut %shortcuts% "Edge (InPrivate)" "run edge inprivate" "%edge_exe_path%"
 call :shortcut %shortcuts% Edge "run edge" "%edge_exe_path%"
-call :shortcut %shortcuts% "f.lux (stop)" "run flux --stop" "%flux_exe_path%"
+call :shortcut %shortcuts% "f.lux (stop)" "run flux stop" "%flux_exe_path%"
 call :shortcut %shortcuts% f.lux "run flux" "%flux_exe_path%"
 call :shortcut %shortcuts% FileZilla "run filezilla" "%filezilla_exe_path%"
-:: call :shortcut %shortcuts% "Firefox (private)" "run firefox --private" "%firefox_exe_path%"
+:: call :shortcut %shortcuts% "Firefox (private)" "run firefox private" "%firefox_exe_path%"
 call :shortcut %shortcuts% Firefox "run firefox" "%firefox_exe_path%"
 call :shortcut %shortcuts% foobar2000 "run foobar2000" "%foobar2000_exe_path%"
 call :shortcut %shortcuts% GIMP "run gimp" "%gimp_exe_path%"
-call :shortcut %shortcuts% Gmail "run app --gmail"
-call :shortcut %shortcuts% "Google Drive" "run app --google-drive"
-call :shortcut %shortcuts% GRUB "admin-center GRUB terminal ~q~q --grub" %ComSpec%
+call :shortcut %shortcuts% Gmail "run app gmail"
+call :shortcut %shortcuts% "Google Drive" "run app google-drive"
+call :shortcut %shortcuts% GRUB "admin-center GRUB terminal ~q~q grub" %ComSpec%
 call :shortcut %shortcuts% ImgBurn "run imgburn" "%imgburn_exe_path%"
 :: call :shortcut %shortcuts% Kodi "run kodi" "%kodi_exe_path%"
 call :shortcut %shortcuts% Laragon "run laragon" "%laragon_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Calc" "run libreoffice --calc" "%libreoffice_scalc_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Impress" "run libreoffice --impress" "%libreoffice_simpress_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Writer" "run libreoffice --writer" "%libreoffice_swriter_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Calc" "run libreoffice calc" "%libreoffice_scalc_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Impress" "run libreoffice impress" "%libreoffice_simpress_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Writer" "run libreoffice writer" "%libreoffice_swriter_exe_path%"
 :: call :shortcut %shortcuts% LibreOffice "run libreoffice" "%libreoffice_soffice_exe_path%"
 call :shortcut %shortcuts% "MIDI Player" "run midi-player" "%midi_player_exe_path%"
-:: call :shortcut %shortcuts% "MinGit (admin)" "admin-center MinGit terminal ~q~q --mingit" "%ComSpec%"
-call :shortcut %shortcuts% MinGit "center MinGit terminal ~q~q --mingit" "%ComSpec%"
+:: call :shortcut %shortcuts% "MinGit (admin)" "admin-center MinGit terminal ~q~q mingit" "%ComSpec%"
+call :shortcut %shortcuts% MinGit "center MinGit terminal ~q~q mingit" "%ComSpec%"
 :: call :shortcut %shortcuts% "Mozilla Thunderbird" "run thunderbird" "%thunderbird_exe_path%"
 call :shortcut %shortcuts% mpv "run mpv" "%mpv_exe_path%"
 :: call :shortcut %shortcuts% MuseScore "run musescore" "%musescore_exe_path%"
 call :shortcut %shortcuts% nano "run nano" %ComSpec%
 call :shortcut %shortcuts% ngrok "center ngrok ngrok" %ComSpec%
-:: call :shortcut %shortcuts% "Node.js (admin)" "admin-center Node.js terminal ~q~q --nodejs" "%nodejs_exe_path%"
-:: call :shortcut %shortcuts% Node.js "center Node.js terminal ~q~q --nodejs" "%nodejs_exe_path%"
+:: call :shortcut %shortcuts% "Node.js (admin)" "admin-center Node.js terminal ~q~q nodejs" "%nodejs_exe_path%"
+:: call :shortcut %shortcuts% Node.js "center Node.js terminal ~q~q nodejs" "%nodejs_exe_path%"
 call :shortcut %shortcuts% Notepad++ "run notepad++" "%notepad_exe_path%"
-call :shortcut %shortcuts% OneDrive "run app --onedrive"
-:: call :shortcut %shortcuts% "Opera (private)" "run opera --private" "%opera_launcher_exe_path%"
-:: call :shortcut %shortcuts% "Opera GX (private)" "run opera_gx --private" "%opera_gx_launcher_exe_path%"
+call :shortcut %shortcuts% OneDrive "run app onedrive"
+:: call :shortcut %shortcuts% "Opera (private)" "run opera private" "%opera_launcher_exe_path%"
+:: call :shortcut %shortcuts% "Opera GX (private)" "run opera_gx private" "%opera_gx_launcher_exe_path%"
 call :shortcut %shortcuts% "Opera GX" "run opera_gx" "%opera_gx_launcher_exe_path%"
 call :shortcut %shortcuts% Opera "run opera" "%opera_launcher_exe_path%"
-call :shortcut %shortcuts% Outlook "run app --outlook"
+call :shortcut %shortcuts% Outlook "run app outlook"
 call :shortcut %shortcuts% PeaZip "run peazip" "%peazip_exe_path%"
 :: call :shortcut %shortcuts% "Permanently delete" "center Permanently_delete permanently-delete" %ComSpec%
 call :shortcut %shortcuts% PicPick "run picpick" "%picpick_exe_path%"
 call :shortcut %shortcuts% pngquant "center pngquant pngquant" %ComSpec%
-:: call :shortcut %shortcuts% "PortableGit (admin)" "admin-center PortableGit terminal ~q~q --portablegit" "%ComSpec%"
-call :shortcut %shortcuts% PortableGit "center PortableGit terminal ~q~q --portablegit" "%ComSpec%"
+:: call :shortcut %shortcuts% "PortableGit (admin)" "admin-center PortableGit terminal ~q~q portablegit" "%ComSpec%"
+call :shortcut %shortcuts% PortableGit "center PortableGit terminal ~q~q portablegit" "%ComSpec%"
 call :shortcut %shortcuts% Superproxy "run superproxy"
 call :shortcut %shortcuts% Psiphon "run psiphon" "%psiphon_exe_path%"
 call :shortcut %shortcuts% REAPER "run reaper" "%reaper_exe_path%"
 call :shortcut %shortcuts% "Remote sync" "center Remote_sync remote-sync" %ComSpec%
 call :shortcut %shortcuts% Restore "center Restore restore" %ComSpec%
 call :shortcut %shortcuts% Sass "center Sass sass" %ComSpec%
-call :shortcut %shortcuts% "Server (stop)" "run server --stop" "%nginx_exe_path%"
+call :shortcut %shortcuts% "Server (stop)" "run server stop" "%nginx_exe_path%"
 call :shortcut %shortcuts% Server "center Server_-_Super server" "%nginx_exe_path%"
 call :shortcut %shortcuts% Shortcuts "center Shortcuts shortcuts" %ComSpec%
 call :shortcut %shortcuts% Shotcut "run shotcut" "%shotcut_exe_path%"
 call :shortcut %shortcuts% Skype "run skype" "%skype_exe_path%"
-call :shortcut %shortcuts% Spotify "run app --spotify"
-call :shortcut %shortcuts% "Stream (audio)" "center Stream_(audio) stream --audio" %ComSpec%
+call :shortcut %shortcuts% Spotify "run app spotify"
+call :shortcut %shortcuts% "Stream (audio)" "center Stream_(audio) stream audio" %ComSpec%
 call :shortcut %shortcuts% Stream "center Stream stream" %ComSpec%
 call :shortcut %shortcuts% TeamViewer "run teamviewer" "%teamviewer_exe_path%"
 :: call :shortcut %shortcuts% Telegram "run telegram" "%telegram_exe_path%"
@@ -2320,11 +2318,11 @@ call :shortcut %shortcuts% "Visual Studio Code" "run code" "%vscode_exe_path%"
 call :shortcut %shortcuts% "VLC media player" "run vlc" "%vlc_exe_path%"
 call :shortcut %shortcuts% "VNC Viewer" "run vnc-viewer" "%vnc_viewer_exe_path%"
 call :shortcut %shortcuts% WordWeb "run wordweb" "%wordweb_exe_path%"
-call :shortcut %shortcuts% "XAMPP (stop)" "run xampp --stop" "%xampp_stop_exe_path%"
+call :shortcut %shortcuts% "XAMPP (stop)" "run xampp stop" "%xampp_stop_exe_path%"
 call :shortcut %shortcuts% XAMPP "center XAMPP_-_Super xampp" "%xampp_start_exe_path%"
-call :shortcut %shortcuts% "YouTube Music" "run app --youtube-music"
-call :shortcut %shortcuts% "YouTube on TV" "run app --youtube-on-tv"
-call :shortcut %shortcuts% YouTube "run app --youtube"
+call :shortcut %shortcuts% "YouTube Music" "run app youtube-music"
+call :shortcut %shortcuts% "YouTube on TV" "run app youtube-on-tv"
+call :shortcut %shortcuts% YouTube "run app youtube"
 call :shortcut %shortcuts% youtube-dl "center youtube-dl youtube-dl" %ComSpec%
 goto end
 
@@ -2375,7 +2373,7 @@ set second=%2
 set third=%3
 set fourth=%4
 set fifth=%5
-if defined first set first=:%first:--=%
+if defined first set first=:%first%
 if defined second set second= %second%
 if defined third set third= %third%
 if defined fourth set fourth= %fourth%
@@ -2389,7 +2387,7 @@ goto end
 
 :startup
 call :sanitize startup "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
-if [%1] == [--disable] goto startup_disable
+if [%1] == [disable] goto startup_disable
 :: call :flux
 call :server "%USERPROFILE%"
 call :shortcut %startup% Startup "run startup"
@@ -2403,7 +2401,7 @@ goto end
 :stream
 call :require mpv
 call :require youtube-dl
-if [%1] == [--audio] set mpv_stream_format=%mpv_stream_format_audio%
+if [%1] == [audio] set mpv_stream_format=%mpv_stream_format_audio%
 :stream_input_url
 set input_url=
 set /p input_url=URL: 
@@ -2460,26 +2458,26 @@ set terminal_color=%1
 set terminal_color=%terminal_color:"=%
 if not defined terminal_color set terminal_color=%cmd_color%
 if defined terminal_color set terminal_color=/t:%terminal_color% 
-if [%2] == [--busybox] (
+if [%2] == [busybox] (
 	call :require BusyBox
 	set PATH=%apps_dir%\BusyBox\App;%PATH:)=^)%
 )
-if [%2] == [--mingit] (
+if [%2] == [mingit] (
 	call :require MinGit
 	set PATH=%apps_dir%\MinGit\App\cmd;%apps_dir%\MinGit\App\mingw%mingw%\bin;%apps_dir%\MinGit\App\usr\bin;%PATH:)=^)%
 )
-if [%2] == [--nodejs] (
+if [%2] == [nodejs] (
 	call :require Node.js
 	set PATH=%apps_dir%\Node.js\App;%PATH:)=^)%
 )
-if [%2] == [--portablegit] (
+if [%2] == [portablegit] (
 	call :require PortableGit
 	set PATH=%apps_dir%\PortableGit\App\cmd;%apps_dir%\PortableGit\App\mingw%mingw%\bin;%apps_dir%\PortableGit\App\usr\bin;%PATH:)=^)%
 )
 doskey open=%this% open $*
 prompt $p$_$$$s
 cd /d %home_dir%
-if [%2] == [--grub] (
+if [%2] == [grub] (
 	call :require GRUB
 	pushd "%apps_dir%"
 	if not exist GRUB (
@@ -2755,7 +2753,7 @@ goto end
 
 :uninstall
 set first=%0
-set first=%first::=--%
+set first=%first::=%
 set second=%1
 if defined second set second= %second%
 call :server-stop
@@ -2865,7 +2863,7 @@ goto end
 :windows-defender
 call :check-privilege %0 "Windows Defender"
 if not %privilege% == 1 goto end
-if [%1] == [--disable] goto windows-defender_disable
+if [%1] == [disable] goto windows-defender_disable
 reg delete "%hklm_software%\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /f>nul 2>&1
 goto end
 :windows-defender_disable
@@ -2875,7 +2873,7 @@ goto end
 :windows-update
 call :check-privilege %0 "Windows Update"
 if not %privilege% == 1 goto end
-if [%1] == [--disable] goto windows-update_disable
+if [%1] == [disable] goto windows-update_disable
 sc config wuauserv start=demand
 sc start wuauserv
 goto end
@@ -2898,7 +2896,7 @@ set third=%3
 set fourth=%4
 if defined first set first=%first:"=%
 set first=%first:_= %
-if defined second set second=:%second:--=%
+if defined second set second=:%second%
 if [%second%] == [%0] goto end
 if defined third set third= %third%
 if defined fourth set fourth= %fourth%
@@ -2913,7 +2911,7 @@ goto end
 :xampp
 call :check-process nginx.exe Nginx>nul 2>&1
 if not %process_status% == 0 goto end
-if [%1] == [--stop] (
+if [%1] == [stop] (
 	nircmd win close title "XAMPP - Super"
 	call :speak "XAMPP was closed"
 	goto xampp-stop
