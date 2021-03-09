@@ -110,10 +110,10 @@ if %is_admin% == 0 (
 )
 if exist "%local_sevenzip%" goto 7-zip_default
 if exist "%local_sevenzip_x86%" goto 7-zip_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %sevenzip_command_start:ampersand=&% & "%sevenzip_exe_path%"%input% & %sevenzip_command_end:ampersand=&% & reg delete %hkcu_software_sevenzip% /f & %this% --speak "7-Zip was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %sevenzip_command_start:ampersand=&% & "%sevenzip_exe_path%"%input% & %sevenzip_command_end:ampersand=&% & reg delete %hkcu_software_sevenzip% /f & %this% speak "7-Zip was closed"">nul 2>&1
 goto end
 :7-zip_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%sevenzip_exe_path%"%input% & %this% --speak "7-Zip was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%sevenzip_exe_path%"%input% & %this% speak "7-Zip was closed"">nul 2>&1
 goto end
 
 :about
@@ -155,7 +155,7 @@ if not %process_status% == 0 (
 )
 call :md "%audacity_config_dir%"
 if exist "%audacity_data_dir%" robocopy "%audacity_data_dir%" "%audacity_config_dir%" /mir>nul 2>&1
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_audacity%" Audacity_Backup & "%audacity_exe_path%"%input% & rd "%localappdata_audacity%" /q /s & ren "%localappdata_audacity%_Backup" Audacity & robocopy "%audacity_config_dir%" "%audacity_data_dir%" /mir & rd "%audacity_config_dir%" /q /s & %this% --speak "Audacity was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_audacity%" Audacity_Backup & "%audacity_exe_path%"%input% & rd "%localappdata_audacity%" /q /s & ren "%localappdata_audacity%_Backup" Audacity & robocopy "%audacity_config_dir%" "%audacity_data_dir%" /mir & rd "%audacity_config_dir%" /q /s & %this% speak "Audacity was closed"">nul 2>&1
 goto end
 
 :backup
@@ -251,6 +251,10 @@ cd..
 popd
 goto end
 
+:busybox
+cmd /c %self% center BusyBox terminal "" --busybox
+goto end
+
 :ccleaner
 call :require CCleaner
 call :check-process %ccleaner_exe% CCleaner
@@ -274,7 +278,7 @@ echo JumplistTasks=^0>>%ccleaner_ini%
 echo HelpImproveCCleaner=^0>>%ccleaner_ini%
 echo PrefsPrivacyShowOffers1stParty=^0>>%ccleaner_ini%
 echo ShowCleanWarning=False>>%ccleaner_ini%
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %ccleaner_exe% & del %ccleaner_ini% & reg delete %hkcu_software_piriform% /f & reg delete %hklm_software_piriform% /f & %this% --speak "CCleaner was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %ccleaner_exe% & del %ccleaner_ini% & reg delete %hkcu_software_piriform% /f & reg delete %hklm_software_piriform% /f & %this% speak "CCleaner was closed"">nul 2>&1
 cd..
 cd..
 popd
@@ -332,7 +336,7 @@ goto end
 set process_name=%1
 set process_description=%2
 if not defined process_name goto end
-if not defined process_description set process_description=%process_name::=--%
+if not defined process_description set process_description=%process_name::=%
 set process_description=%process_description:"=%
 set privilege=0
 openfiles>nul 2>&1
@@ -402,7 +406,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%chrome_data_dir%"
@@ -412,14 +416,14 @@ set chrome_switches=!chrome_switches:--user-data-dir=--user-data-dir="%chrome_da
 set chrome_clean_appdata=echo.
 if %is_admin% == 1 set chrome_clean_appdata=rd "%local_google_dir%" /q /s
 :: call :disable-chrome-history "%chrome_profile_dir%"
-set chrome_command=%this% --disable-chrome-history "%chrome_profile_dir%"
+set chrome_command=%this% disable-chrome-history "%chrome_profile_dir%"
 :: if %is_admin% == 0 set chrome_command=rd "%chrome_dictionaries_dir%" "%chrome_data_dir%" /q /s ampersand rd "%chrome_app_dir%" "%google_data_dir%" "%google_dir%"
 if exist "%local_chrome_exe_path%" goto chrome_default
 if exist "%local_chromium_exe_path%" goto chrome_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_chrome_dir%" Chrome_Backup & "%chrome_exe_path%"%chrome_switches%%input% & %chrome_command:ampersand=&% & rd "%local_chrome_dir%" "%local_google_software_reporter_tool_dir%" /q /s & ren "%local_chrome_dir%_Backup" Chrome & rd "%local_google_dir%" & %chrome_clean_appdata% & reg delete %hkcu_software_google% /f & %this% --clear-recent-items & %this% --speak "Chrome was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_chrome_dir%" Chrome_Backup & "%chrome_exe_path%"%chrome_switches%%input% & %chrome_command:ampersand=&% & rd "%local_chrome_dir%" "%local_google_software_reporter_tool_dir%" /q /s & ren "%local_chrome_dir%_Backup" Chrome & rd "%local_google_dir%" & %chrome_clean_appdata% & reg delete %hkcu_software_google% /f & %this% clear-recent-items & %this% speak "Chrome was closed"">nul 2>&1
 goto end
 :chrome_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%chrome_exe_path%"%chrome_switches%%input% & %chrome_command:ampersand=&% & %this% --clear-recent-items & %this% --speak "Chrome was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%chrome_exe_path%"%chrome_switches%%input% & %chrome_command:ampersand=&% & %this% clear-recent-items & %this% speak "Chrome was closed"">nul 2>&1
 goto end
 
 :chrome-extensions
@@ -470,7 +474,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%chromium_data_dir%"
@@ -480,14 +484,14 @@ set chromium_switches=!chromium_switches:--user-data-dir=--user-data-dir="%chrom
 set chromium_clean_appdata=echo.
 if %is_admin% == 1 set chromium_clean_appdata=rd "%local_chromium_dir%" /q /s
 :: call :disable-chrome-history "%chromium_profile_dir%"
-set chromium_command=%this% --disable-chrome-history "%chromium_profile_dir%"
+set chromium_command=%this% disable-chrome-history "%chromium_profile_dir%"
 :: if %is_admin% == 0 set chromium_command=rd "%chromium_dictionaries_dir%" "%chromium_data_dir%" /q /s ampersand rd "%chromium_dir%"
 if exist "%local_chromium_exe_path%" goto chromium_default
 if exist "%local_chrome_exe_path%" goto chromium_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_chromium_dir%" Chromium_Backup & "%chromium_exe_path%"%chromium_switches%%input% & %chromium_command:ampersand=&% & rd "%local_chromium_dir%" /q /s & ren "%local_chromium_dir%_Backup" Chromium & %chromium_clean_appdata% & reg delete %hkcu_software_chromium% /f & reg delete %hkcu_software_google% /f & %this% --clear-recent-item & %this% --speak "Chromium was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_chromium_dir%" Chromium_Backup & "%chromium_exe_path%"%chromium_switches%%input% & %chromium_command:ampersand=&% & rd "%local_chromium_dir%" /q /s & ren "%local_chromium_dir%_Backup" Chromium & %chromium_clean_appdata% & reg delete %hkcu_software_chromium% /f & reg delete %hkcu_software_google% /f & %this% clear-recent-items & %this% speak "Chromium was closed"">nul 2>&1
 goto end
 :chromium_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%chromium_exe_path%"%chromium_switches%%input% & %chromium_command:ampersand=&% & %this% --clear-recent-items & %this% --speak "Chromium was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%chromium_exe_path%"%chromium_switches%%input% & %chromium_command:ampersand=&% & %this% clear-recent-items & %this% speak "Chromium was closed"">nul 2>&1
 goto end
 
 :clear-recent-items
@@ -530,10 +534,10 @@ echo     "git.ignoreMissingGitWarning": true>>%vscode_settings%
 echo }>>%vscode_settings%
 if exist "%local_vscode%" goto code_default
 if exist "%local_vscode_x86%" goto code_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_code%" Code_Backup & "%vscode_exe_path%"%input% & rd "%appdata_code%" "%vscode_data_dir%" /q /s & ren "%appdata_code%_Backup" Code & %this% --speak "Visual Studio Code was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_code%" Code_Backup & "%vscode_exe_path%"%input% & rd "%appdata_code%" "%vscode_data_dir%" /q /s & ren "%appdata_code%_Backup" Code & %this% speak "Visual Studio Code was closed"">nul 2>&1
 goto end
 :code_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vscode_exe_path%"%input% & rd "%vscode_data_dir%" /q /s & %this% --speak "Visual Studio Code was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vscode_exe_path%"%input% & rd "%vscode_data_dir%" /q /s & %this% speak "Visual Studio Code was closed"">nul 2>&1
 goto end
 
 :corporate-app
@@ -719,7 +723,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%edge_data_dir%"
@@ -729,13 +733,13 @@ set edge_switches=!edge_switches:--user-data-dir=--user-data-dir="%edge_data_dir
 set edge_clean_appdata=echo.
 if %is_admin% == 1 set edge_clean_appdata=rd "%local_edge_dir%" /q /s
 :: call :disable-chrome-history "%edge_profile_dir%"
-set edge_command=%this% --disable-chrome-history "%edge_profile_dir%"
+set edge_command=%this% disable-chrome-history "%edge_profile_dir%"
 :: if %is_admin% == 0 set edge_command=rd "%edge_dictionaries_dir%" "%edge_data_dir%" /q /s ampersand rd "%edge_dir%"
 if exist "%local_edge_exe_path%" goto edge_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_edge_dir%" Edge_Backup & "%edge_exe_path%"%edge_switches%%input% & %edge_command:ampersand=&% & rd "%local_edge_dir%" /q /s & ren "%local_edge_dir%_Backup" Edge & %edge_clean_appdata% & reg delete %hkcu_software_edge% /f & reg delete %hkcu_software_edgeupdate% /f & %this% --clear-recent-items & %this% --speak "Edge was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%local_edge_dir%" Edge_Backup & "%edge_exe_path%"%edge_switches%%input% & %edge_command:ampersand=&% & rd "%local_edge_dir%" /q /s & ren "%local_edge_dir%_Backup" Edge & %edge_clean_appdata% & reg delete %hkcu_software_edge% /f & reg delete %hkcu_software_edgeupdate% /f & %this% clear-recent-items & %this% speak "Edge was closed"">nul 2>&1
 goto end
 :edge_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%edge_exe_path%"%edge_switches%%input% & %edge_command:ampersand=&% & %this% --clear-recent-items & %this% --speak "Edge was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%edge_exe_path%"%edge_switches%%input% & %edge_command:ampersand=&% & %this% clear-recent-items & %this% speak "Edge was closed"">nul 2>&1
 goto end
 
 :error
@@ -763,11 +767,11 @@ if exist "%local_filezilla_x86%" goto filezilla_default
 if %is_admin% == 0 call :rd "%filezilla_config_location%"
 set filezilla_command=echo.
 :: if %is_admin% == 0 set filezilla_command=rd "%filezilla_config_location%" /q /s
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %filezilla_command% & %this% --speak "FileZilla was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %filezilla_command% & %this% speak "FileZilla was closed"">nul 2>&1
 set HOME=%ORIGINAL_HOME%
 goto end
 :filezilla_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %this% --speak "FileZilla was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%filezilla_exe_path%" & %this% speak "FileZilla was closed"">nul 2>&1
 set HOME=%ORIGINAL_HOME%
 goto end
 
@@ -786,7 +790,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%firefox_data_dir%"
@@ -906,10 +910,10 @@ set firefox_command=echo.
 :: if %is_admin% == 0 set firefox_command=rd "%firefox_data_dir%" /q /s
 if exist "%local_firefox%" goto firefox_default
 if exist "%local_firefox_x86%" goto firefox_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_mozilla%" Mozilla_Backup & ren "%locallow_mozilla%" Mozilla_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%programdata_mozilla%" Mozilla_Backup & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & rd "%firefox_distribution_dir%" /q /s & rd "%localappdata_mozilla%" /q /s & ren "%localappdata_mozilla%_Backup" Mozilla & rd "%locallow_mozilla%" /q /s & ren "%locallow_mozilla%_Backup" Mozilla & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%programdata_mozilla%" /q /s & ren "%programdata_mozilla%_Backup" Mozilla & %firefox_clean_appdata% & %firefox_command% & %this% --firefox-extensions --clean & reg delete %hkcu_software_mozilla% /f & %this% --clear-recent-items & %this% --speak "Firefox was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_mozilla%" Mozilla_Backup & ren "%locallow_mozilla%" Mozilla_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%programdata_mozilla%" Mozilla_Backup & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & rd "%firefox_distribution_dir%" /q /s & rd "%localappdata_mozilla%" /q /s & ren "%localappdata_mozilla%_Backup" Mozilla & rd "%locallow_mozilla%" /q /s & ren "%locallow_mozilla%_Backup" Mozilla & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%programdata_mozilla%" /q /s & ren "%programdata_mozilla%_Backup" Mozilla & %firefox_clean_appdata% & %firefox_command% & %this% firefox-extensions --clean & reg delete %hkcu_software_mozilla% /f & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
 goto end
 :firefox_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & %firefox_command% & %this% --clear-recent-items & %this% --speak "Firefox was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%firefox_exe_path%"%input% -profile "%firefox_data_dir%" & %this_backup% --wait "%firefox_exe_path%" & %firefox_command% & %this% clear-recent-items & %this% speak "Firefox was closed"">nul 2>&1
 goto end
 
 :firefox-extensions
@@ -936,7 +940,7 @@ call :require FluidSynth
 call :require SoundFonts
 call :sanitize input %1
 if defined input set input= %input:&=^&%
-start "%0" cmd /c "color %cmd_color% & nircmd win center title %0 & title FluidSynth -%input% & echo. & fluidsynth%fluidsynth_options% %soundfont%%input% & %this% --speak "FluidSynth was closed""
+start "%0" cmd /c "color %cmd_color% & nircmd win center title %0 & title FluidSynth -%input% & echo. & fluidsynth%fluidsynth_options% %soundfont%%input% & %this% speak "FluidSynth was closed""
 goto end
 
 :flux
@@ -997,7 +1001,7 @@ if not %process_status% == 0 (
 	start "" "%foobar2000_exe_path%"
 	goto end
 )
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%foobar2000_exe_path%" & %this% --speak "foobar2000 was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%foobar2000_exe_path%" & %this% speak "foobar2000 was closed"">nul 2>&1
 goto end
 
 :gimp
@@ -1010,7 +1014,7 @@ if not %process_status% == 0 (
 	start "" "%gimp_exe_path%"!input!
 	goto end
 )
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & robocopy "%gimp_data_dir%\Local\babl-0.1" "%localappdata_babl%" /e & robocopy "%gimp_data_dir%\Local\gegl-0.4" "%localappdata_gegl%" /e & robocopy "%gimp_data_dir%\Local\GIMP" "%localappdata_gimp%" /e & robocopy "%gimp_data_dir%\Local\gtk-2.0" "%localappdata_gtk%" /e & "%gimp_exe_path%"%input% & robocopy "%localappdata_babl%" "%gimp_data_dir%\Local\babl-0.1" /e /move /purge & robocopy "%localappdata_gegl%" "%gimp_data_dir%\Local\gegl-0.4" /e /move /purge & robocopy "%localappdata_gimp%" "%gimp_data_dir%\Local\GIMP" /e /move /purge & robocopy "%localappdata_gtk%" "%gimp_data_dir%\Local\gtk-2.0" /e /move /purge & robocopy "%LOCALAPPDATA%" "%gimp_data_dir%\Local" recently-used.xbel /mov & %this% --speak "GIMP was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & robocopy "%gimp_data_dir%\Local\babl-0.1" "%localappdata_babl%" /e & robocopy "%gimp_data_dir%\Local\gegl-0.4" "%localappdata_gegl%" /e & robocopy "%gimp_data_dir%\Local\GIMP" "%localappdata_gimp%" /e & robocopy "%gimp_data_dir%\Local\gtk-2.0" "%localappdata_gtk%" /e & "%gimp_exe_path%"%input% & robocopy "%localappdata_babl%" "%gimp_data_dir%\Local\babl-0.1" /e /move /purge & robocopy "%localappdata_gegl%" "%gimp_data_dir%\Local\gegl-0.4" /e /move /purge & robocopy "%localappdata_gimp%" "%gimp_data_dir%\Local\GIMP" /e /move /purge & robocopy "%localappdata_gtk%" "%gimp_data_dir%\Local\gtk-2.0" /e /move /purge & robocopy "%LOCALAPPDATA%" "%gimp_data_dir%\Local" recently-used.xbel /mov & %this% speak "GIMP was closed"">nul 2>&1
 goto end
 
 :google
@@ -1023,7 +1027,7 @@ call :sanitize input %1
 if defined input set input= %input:&=^&%
 call :check-process %imgburn_exe% ImgBurn
 if not %process_status% == 0 goto end
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & type nul>"%imgburn_settings%" & "%imgburn_exe_path%"%input% /PORTABLE /SETTINGS "%imgburn_settings%" & rd "%imgburn_log_files_dir%" /q /s & %this% --speak "ImgBurn was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & type nul>"%imgburn_settings%" & "%imgburn_exe_path%"%input% /PORTABLE /SETTINGS "%imgburn_settings%" & rd "%imgburn_log_files_dir%" /q /s & %this% speak "ImgBurn was closed"">nul 2>&1
 goto end
 
 :install
@@ -1058,14 +1062,14 @@ goto end
 :kodi
 call :require "Microsoft Visual C++ 2015-2019 Redistributable"
 call :require Kodi
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%kodi_exe_path%" -p & %this% --speak "Kodi was closed""
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%kodi_exe_path%" -p & %this% speak "Kodi was closed""
 goto end
 
 :laragon
 call :require Laragon
 call :check-process %laragon_exe% Laragon
 if not %process_status% == 0 goto end
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%laragon_exe_path%" & %this% --speak "Laragon was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%laragon_exe_path%" & %this% speak "Laragon was closed"">nul 2>&1
 goto end
 
 :libreoffice
@@ -1115,7 +1119,7 @@ if not exist intro.png call :ren intro_backup.png intro.png
 if not exist intro_backup.png call :ren intro.png intro_backup.png
 if not exist intro.png call :ren intro_original.png intro.png
 popd
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%libreoffice_exe_path%"%input% & %this% --%app_label% --reset & %this% --speak "LibreOffice was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%libreoffice_exe_path%"%input% & %this% %app_label% --reset & %this% speak "LibreOffice was closed"">nul 2>&1
 goto end
 :libreoffice_reset
 if %is_admin% == 0 robocopy "%libreoffice_default_settings_dir%" "%libreoffice_settings_dir%" /mir 
@@ -1151,15 +1155,15 @@ call :escape c %2
 call :escape d %3
 call :escape e %4
 call :escape f %5
-if not defined b set b=--terminal
-if [%b%] == [--terminal] (
+if not defined b set b=terminal
+if [%b%] == [terminal] (
 	set c=Terminal
 	call :escape d %2
 	if not defined d set d=%cmd_color%
 )
 if defined d (
 	set remote_sync=%d:"=%
-	if /i "!remote_sync!" == "--remote-sync" set c=Server_+_Remote_sync
+	if /i "!remote_sync!" == "remote-sync" set c=Server_+_Remote_sync
 	set d= %d%
 )
 if defined e set e= %e%
@@ -1172,13 +1176,13 @@ set disable="%apps_dir%\NirCmd\App\nircmd.exe" win disable ititle "%opening%"
 set hide="%apps_dir%\NirCmd\App\nircmd.exe" win hide ititle "%opening%"
 set max="%apps_dir%\NirCmd\App\nircmd.exe" win max ititle "%opening%"
 :: set setsize="%apps_dir%\NirCmd\App\nircmd.exe" win setsize title "%opening%" 26, 26, 993, 519
-if [%b%] == [--admin-center] %admin% "%color% & title %opening% & %center% & echo. & %a% --wrapper %c%%d%%e%%f%" & exit
-if [%b%] == [--admin-max] %admin% "%color% & title %opening% & %center% & %max% & echo. & %a% --wrapper %c%%d%%e%%f%" & exit
-if [%b%] == [--admin-run] %admin% "%color% & title %opening% & %center% & %disable% & echo. & %hide% & %a%%d%%e%%f%" & exit
-if [%b%] == [--center] start "%opening%" cmd /c "%color% & %center% & echo. & %a% --wrapper %c%%d%%e%%f%" & exit
-if [%b%] == [--max] start "%opening%" /max cmd /c "%color% & echo. & %a% --wrapper %c%%d%%e%%f%" & exit
-if [%b%] == [--run] start "%opening%" cmd /c "%color% & %center% & %disable% & echo. & %hide% & %a%%d%%e%%f%" & exit
-if [%b%] == [--terminal] start "%opening%" cmd /c "%color% & %center% & echo. & %a% --wrapper %c% %b%%d%" & exit
+if [%b%] == [admin-center] %admin% "%color% & title %opening% & %center% & echo. & %a% wrapper %c%%d%%e%%f%" & exit
+if [%b%] == [admin-max] %admin% "%color% & title %opening% & %center% & %max% & echo. & %a% wrapper %c%%d%%e%%f%" & exit
+if [%b%] == [admin-run] %admin% "%color% & title %opening% & %center% & %disable% & echo. & %hide% & %a%%d%%e%%f%" & exit
+if [%b%] == [center] start "%opening%" cmd /c "%color% & %center% & echo. & %a% wrapper %c%%d%%e%%f%" & exit
+if [%b%] == [max] start "%opening%" /max cmd /c "%color% & echo. & %a% wrapper %c%%d%%e%%f%" & exit
+if [%b%] == [run] start "%opening%" cmd /c "%color% & %center% & %disable% & echo. & %hide% & %a%%d%%e%%f%" & exit
+if [%b%] == [terminal] start "%opening%" cmd /c "%color% & %center% & echo. & %a% wrapper %c% %b%%d%" & exit
 call :settings
 for /f "tokens=*" %%x in (%settings_ini%) do (
 	set line=%%x
@@ -1214,7 +1218,7 @@ echo Silence is golden.>"%TEMP%\%self%.tmp"
 :: call :kill OneDrive.exe
 :: call :kill OneDriveStandaloneUpdater.exe
 call :clear-recent-items
-if [%b%] == [--wrapper] goto start-wrapper
+if [%b%] == [wrapper] goto start-wrapper
 call :lockfile %b%
 if not %lock_status% == 0 goto end
 call :start %b% %c%%d%%e%%f%
@@ -1242,10 +1246,14 @@ cd MIDI_Player
 cd App
 if exist "Sample Playlist.vpl" call :del "Sample Playlist.vpl"
 reg add "%hkcu_software_midi_player%\SessionTip" /v ShowTips /t REG_DWORD /d 0
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%midi_player_exe%" & reg delete %hkcu_software_vanbasco% /f & %this% --speak "MIDI Player was closed""
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%midi_player_exe%" & reg delete %hkcu_software_vanbasco% /f & %this% speak "MIDI Player was closed""
 cd..
 cd..
 popd
+goto end
+
+:mingit
+cmd /c %self% center MinGit terminal "" --mingit
 goto end
 
 :mozilla
@@ -1259,7 +1267,7 @@ call :sanitize input %1
 if defined input set input= %input:&=^&%
 set mpv_loop=playlist
 call :mpv_config
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%mpv_exe_path%"%input% & %this% --speak "mpv was closed""
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%mpv_exe_path%"%input% & %this% speak "mpv was closed""
 goto end
 
 :mpv_config
@@ -1288,7 +1296,7 @@ if not %process_status% == 0 (
 	goto end
 )
 if not exist "%musescore_data_dir%" call :md "%musescore_data_dir%"
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%musescore_exe_path%" --config-folder "%musescore_data_dir%"%input% & rd "%localappdata_cache%" "%localappdata_musescore%" /q /s & reg delete "%hkcu_software_musescoredotorg%" /f & reg delete "%hkcu_software_qtproject%" /f & %this% --speak "MuseScore was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%musescore_exe_path%" --config-folder "%musescore_data_dir%"%input% & rd "%localappdata_cache%" "%localappdata_musescore%" /q /s & reg delete "%hkcu_software_musescoredotorg%" /f & reg delete "%hkcu_software_qtproject%" /f & %this% speak "MuseScore was closed"">nul 2>&1
 goto end
 
 :nano
@@ -1300,7 +1308,7 @@ set ORIGINAL_ALLUSERSPROFILE=%ALLUSERSPROFILE%
 set ALLUSERSPROFILE=%settings_dir%
 for /f "tokens=1* delims=:" %%a in ("%apps_dir%") do set apps_dir_without_drive_letter=%%b
 %apps_dir%\BusyBox\App\sed.exe "s/%%apps_dir%%/%apps_dir_without_drive_letter:\=\/%/" "%settings_dir%\nanorc.txt">"%settings_dir%\nanorc"
-start "%0" cmd /c "nircmd win center title %0 & title nano & nano%input% & %this% --speak "nano was closed""
+start "%0" cmd /c "nircmd win center title %0 & title nano & nano%input% & %this% speak "nano was closed""
 nircmd win center ititle nano
 set ALLUSERSPROFILE=%ORIGINAL_ALLUSERSPROFILE%
 goto end
@@ -1309,7 +1317,7 @@ goto end
 set ngrok_port=
 set /p ngrok_port=Port: 
 if not defined ngrok_port goto ngrok
-start "%0" cmd /c "nircmd win center title %0 & title ngrok - %ngrok_port% & ngrok http %ngrok_port% & %this% --speak "ngrok was closed""
+start "%0" cmd /c "nircmd win center title %0 & title ngrok - %ngrok_port% & ngrok http %ngrok_port% & %this% speak "ngrok was closed""
 goto ngrok
 
 :notepad++
@@ -1326,10 +1334,10 @@ if not %process_status% == 0 (
 if exist "%local_notepad%" goto notepad++_default
 if exist "%local_notepad_x86%" goto notepad++_default
 %apps_dir%\BusyBox\App\sed.exe -i "s/isMaximized=\"no\"/isMaximized=\"yes\"/;s/Wrap=\"no\"/Wrap=\"yes\"/" "%notepad_app_dir%\config.xml">nul 2>&1
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_notepad%" Notepad++_Backup & "%notepad_exe_path%"%input% & rd "%localappdata_notepad%" /q /s & ren "%localappdata_notepad%_Backup" Notepad++ & %this% --speak "Notepad++ was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_notepad%" Notepad++_Backup & "%notepad_exe_path%"%input% & rd "%localappdata_notepad%" /q /s & ren "%localappdata_notepad%_Backup" Notepad++ & %this% speak "Notepad++ was closed"">nul 2>&1
 goto end
 :notepad++_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%notepad_exe_path%"%input% & %this% --speak "Notepad++ was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%notepad_exe_path%"%input% & %this% speak "Notepad++ was closed"">nul 2>&1
 goto end
 
 :notes
@@ -1435,7 +1443,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%opera_data_dir%"
@@ -1446,10 +1454,10 @@ set opera_command=echo.
 if exist "%local_opera%" goto opera_default
 if exist "%local_opera_all%" goto opera_default
 if exist "%local_opera_all_x86%" goto opera_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & rd "%appdata_opera%" /q /s & %opera_command% & reg delete "%hkcu_software_opera_software%" /f & %this% --speak "Opera was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & rd "%appdata_opera%" /q /s & %opera_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera was closed"">nul 2>&1
 goto end
 :opera_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & %opera_command% & %this% --speak "Opera was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_launcher_exe_path%"%opera_switches%%input% & %this_backup% --wait "%opera_exe_path%" & %opera_command% & %this% speak "Opera was closed"">nul 2>&1
 goto end
 
 :opera_gx
@@ -1473,7 +1481,7 @@ if not %process_status% == 0 (
 )
 call :check-process privoxy.exe Privoxy>nul 2>&1
 if not %process_status% == 1 (
-	if %is_admin% == 0 cmd /c %this% --superproxy
+	if %is_admin% == 0 cmd /c %this% superproxy
 )
 call :settings
 if %is_admin% == 0 call :rd "%opera_gx_data_dir%"
@@ -1484,10 +1492,10 @@ set opera_gx_command=echo.
 if exist "%local_opera_gx%" goto opera_gx_default
 if exist "%local_opera_gx_all%" goto opera_gx_default
 if exist "%local_opera_gx_all_x86%" goto opera_gx_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & rd "%appdata_opera%" /q /s & %opera_gx_command% & reg delete "%hkcu_software_opera_software%" /f & %this% --speak "Opera GX was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & rd "%appdata_opera%" /q /s & %opera_gx_command% & reg delete "%hkcu_software_opera_software%" /f & %this% speak "Opera GX was closed"">nul 2>&1
 goto end
 :opera_gx_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & %opera_gx_command% & %this% --speak "Opera GX was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%opera_gx_launcher_exe_path%"%opera_gx_switches%%input% & %this_backup% --wait "%opera_gx_exe_path%" & %opera_gx_command% & %this% speak "Opera GX was closed"">nul 2>&1
 goto end
 
 :opera-extensions
@@ -1521,7 +1529,7 @@ goto end
 call :require PeaZip
 call :check-process %peazip_exe% PeaZip
 if not %process_status% == 0 goto end
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%peazip_exe_path%" & %this% --speak "PeaZip was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%peazip_exe_path%" & %this% speak "PeaZip was closed"">nul 2>&1
 goto end
 
 :permanently-delete
@@ -1547,10 +1555,10 @@ if not %process_status% == 0 (
 )
 if exist "%local_picpick%" goto picpick_default
 if exist "%local_picpick_x86%" goto picpick_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_picpick%" PicPick_Backup & ren "%programdata_picpick%" PicPick_Backup & "%picpick_exe_path%"%input% & rd "%appdata_picpick%" "%programdata_picpick%" /q /s & ren "%appdata_picpick%_Backup" PicPick & ren "%programdata_picpick%_Backup" PicPick & %this% --speak "PicPick was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_picpick%" PicPick_Backup & ren "%programdata_picpick%" PicPick_Backup & "%picpick_exe_path%"%input% & rd "%appdata_picpick%" "%programdata_picpick%" /q /s & ren "%appdata_picpick%_Backup" PicPick & ren "%programdata_picpick%_Backup" PicPick & %this% speak "PicPick was closed"">nul 2>&1
 goto end
 :picpick_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%picpick_exe_path%"%input% & %this% --speak "PicPick was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%picpick_exe_path%"%input% & %this% speak "PicPick was closed"">nul 2>&1
 goto end
 
 :ping
@@ -1597,6 +1605,10 @@ rd %output_folder%>nul 2>&1
 echo.
 popd
 goto pngquant
+
+:portablegit
+cmd /c %self% center PortableGit terminal "" --portablegit
+goto end
 
 :power-off
 call :disconnect
@@ -1685,12 +1697,12 @@ if not exist "%psiphon_reg%" (
 	call :registry "%psiphon_reg%"
 	set psiphon_command_start=reg import "%psiphon_reg%"
 )
-set psiphon_command_end=md "%psiphon_data_dir%" ampersand reg export %hkcu_software_psiphon3% "%psiphon_reg%" /y ampersand %this% --registry "%psiphon_reg%"
+set psiphon_command_end=md "%psiphon_data_dir%" ampersand reg export %hkcu_software_psiphon3% "%psiphon_reg%" /y ampersand %this% registry "%psiphon_reg%"
 :: if %is_admin% == 0 (
 :: 	set psiphon_command_start=%psiphon_default_settings%
 :: 	set psiphon_command_end=rd "%psiphon_data_dir%" /q /s
 :: )
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %psiphon_command_start:ampersand=&% & %psiphon_exe_path% & %psiphon_command_end:ampersand=&% & start /min cmd /c "%this% --disconnect" & %this% --speak "Psiphon was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & %psiphon_command_start:ampersand=&% & %psiphon_exe_path% & %psiphon_command_end:ampersand=&% & start /min cmd /c "%this% disconnect" & %this% speak "Psiphon was closed"">nul 2>&1
 popd
 call :privoxy %hostname%:%psiphon_port%
 goto end
@@ -1731,7 +1743,7 @@ if not %process_status% == 0 (
 	start "" "%reaper_exe_path%"!input!
 	goto end
 )
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%reaper_exe_path%"%input% & rd "%reaper_media_dir%" & reg delete %hkcu_software_kdptm% /f & %this% --speak "REAPER was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%reaper_exe_path%"%input% & rd "%reaper_media_dir%" & reg delete %hkcu_software_kdptm% /f & %this% speak "REAPER was closed"">nul 2>&1
 goto end
 
 :registry
@@ -1969,7 +1981,7 @@ cd Data
 call :md PHP
 %apps_dir%\BusyBox\App\sed.exe "s/max_execution_time = 30/max_execution_time = 120/;s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/;s/;extension=mysqli/extension=mysqli/;s/;extension_dir = \"ext\"/extension_dir = \"%apps_dir:\=\\%\\Server\\App\\PHP\\ext\"/;s/;extension=openssl/extension=openssl/" ..\App\PHP\php.ini-development>PHP\php.ini
 set server_title=%0-php
-start "%server_title%" cmd /c "nircmd win center title %server_title% & nircmd win min title %server_title% & nircmd win hide title %server_title% & nircmd win activate stitle "Server - Super" & php-cgi -b 127.0.0.1:9000 -c "%CD%\PHP\php.ini" & %this% --server %location% --start-php"
+start "%server_title%" cmd /c "nircmd win center title %server_title% & nircmd win min title %server_title% & nircmd win hide title %server_title% & nircmd win activate stitle "Server - Super" & php-cgi -b 127.0.0.1:9000 -c "%CD%\PHP\php.ini" & %this% server %location% --start-php"
 cd..
 if [%1] == [] (
 	pushd Data
@@ -2185,8 +2197,8 @@ if not defined shortcut_name goto end
 set shortcut_parameters=%3
 if not defined shortcut_parameters goto end
 set shortcut_parameters=%shortcut_parameters:"=%
-if /i not "%shortcut_parameters:--run=%" == "%shortcut_parameters%" set shortcut_parameters=--run %shortcut_name: =_% %shortcut_parameters:--run =%
-if /i not "%shortcut_parameters:--admin-run=%" == "%shortcut_parameters%" set shortcut_parameters=--admin-run %shortcut_name: =_% %shortcut_parameters:--admin-run =%
+if /i "run" == "%shortcut_parameters:~0,3%" set shortcut_parameters=run %shortcut_name: =_% %shortcut_parameters:run =%
+if /i not "%shortcut_parameters:admin-run=%" == "%shortcut_parameters%" set shortcut_parameters=admin-run %shortcut_name: =_% %shortcut_parameters:admin-run =%
 set shortcut_parameters="%shortcut_parameters:"=%"
 call :sanitize icon %4
 if not defined icon goto shortcut_no_icon
@@ -2204,117 +2216,116 @@ set desktop_shortcuts="~$folder.desktop$"
 call :sanitize shortcuts "%apps_dir%\Shortcuts"
 if not [%shortcuts_name%] == [--desktop] goto shortcuts_main
 if exist %shortcuts% nircmd shortcut %shortcuts% %desktop_shortcuts% Apps
-nircmd shortcut \\LAPTOP-0M7N2TK3 %desktop_shortcuts% Cyrene
-:: call :shortcut %desktop_shortcuts% "7-Zip File Manager" "--run --7-zip" "%sevenzip_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% Chromium "--run --chromium" "%chromium_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% foobar2000 "--run --foobar2000" "%foobar2000_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "Google Chrome" "--run --chrome" "%chrome_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Calc" "--run --libreoffice --calc" "%libreoffice_scalc_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Impress" "--run --libreoffice --impress" "%libreoffice_simpress_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Writer" "--run --libreoffice --writer" "%libreoffice_swriter_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "Mozilla Firefox" "--run --firefox" "%firefox_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% mpv "--run --mpv" "%mpv_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% Notepad++ "--run --notepad++" "%notepad_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% Opera "--run --opera" "%opera_launcher_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% Skype "--run --skype" "%skype_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% TeamViewer "--run --teamviewer" "%teamviewer_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% "VLC media player" "--run --vlc" "%vlc_exe_path%"
-:: call :install-and-create-shortcut %desktop_shortcuts% WordWeb "--run --wordweb" "%wordweb_exe_path%"
+:: call :shortcut %desktop_shortcuts% "7-Zip File Manager" "run 7-zip" "%sevenzip_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% Chromium "run chromium" "%chromium_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% foobar2000 "run foobar2000" "%foobar2000_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "Google Chrome" "run chrome" "%chrome_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Calc" "run libreoffice --calc" "%libreoffice_scalc_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Impress" "run libreoffice --impress" "%libreoffice_simpress_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "LibreOffice Writer" "run libreoffice --writer" "%libreoffice_swriter_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "Mozilla Firefox" "run firefox" "%firefox_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% mpv "run mpv" "%mpv_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% Notepad++ "run notepad++" "%notepad_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% Opera "run opera" "%opera_launcher_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% Skype "run skype" "%skype_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% TeamViewer "run teamviewer" "%teamviewer_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% "VLC media player" "run vlc" "%vlc_exe_path%"
+:: call :install-and-create-shortcut %desktop_shortcuts% WordWeb "run wordweb" "%wordweb_exe_path%"
 goto end
 :shortcuts_main
 call :del "%shortcuts:"=%\*.lnk"
-call :shortcut %shortcuts% 7-Zip "--run --7-zip" "%sevenzip_exe_path%"
-call :shortcut %shortcuts% Audacity "--run --audacity" "%audacity_exe_path%"
-call :shortcut %shortcuts% Backup "--center Backup --backup" %ComSpec%
-call :shortcut %shortcuts% "BusyBox (admin)" "--admin-center BusyBox --terminal ~q~q --busybox" "%busybox_exe_path%"
-call :shortcut %shortcuts% BusyBox "--center BusyBox --terminal ~q~q --busybox" "%busybox_exe_path%"
-call :shortcut %shortcuts% CCleaner "--admin-run --ccleaner" "%ccleaner_exe_path%"
-call :shortcut %shortcuts% "CD ripper" "--center CD_ripper --cd-ripper" %ComSpec%
-call :shortcut %shortcuts% Checksum "--center Checksum --checksum" %ComSpec%
-:: call :shortcut %shortcuts% "Chrome (incognito)" "--run --chrome --incognito" "%chrome_exe_path%"
-call :shortcut %shortcuts% Chrome "--run --chrome" "%chrome_exe_path%"
-:: call :shortcut %shortcuts% "Chromium (incognito)" "--run --chromium --incognito" "%chromium_exe_path%"
-call :shortcut %shortcuts% Chromium "--run --chromium" "%chromium_exe_path%"
-call :shortcut %shortcuts% Delete "--center Delete --delete" %ComSpec%
-call :shortcut %shortcuts% Disconnect "--run --disconnect"
-call :shortcut %shortcuts% "Download (aria2)" "--center Download_(aria2) --download" %ComSpec%
-call :shortcut %shortcuts% "Download (curl)" "--center Download_(curl) --download --curl" %ComSpec%
-call :shortcut %shortcuts% "Download (Wget)" "--center Download_(Wget) --download --wget" %ComSpec%
-:: call :shortcut %shortcuts% Download "--center Download --download" %ComSpec%
-:: call :shortcut %shortcuts% "Edge (InPrivate)" "--run --edge --inprivate" "%edge_exe_path%"
-call :shortcut %shortcuts% Edge "--run --edge" "%edge_exe_path%"
-call :shortcut %shortcuts% "f.lux (stop)" "--run --flux --stop" "%flux_exe_path%"
-call :shortcut %shortcuts% f.lux "--run --flux" "%flux_exe_path%"
-call :shortcut %shortcuts% FileZilla "--run --filezilla" "%filezilla_exe_path%"
-:: call :shortcut %shortcuts% "Firefox (private)" "--run --firefox --private" "%firefox_exe_path%"
-call :shortcut %shortcuts% Firefox "--run --firefox" "%firefox_exe_path%"
-call :shortcut %shortcuts% foobar2000 "--run --foobar2000" "%foobar2000_exe_path%"
-call :shortcut %shortcuts% GIMP "--run --gimp" "%gimp_exe_path%"
-call :shortcut %shortcuts% Gmail "--run --app --gmail"
-call :shortcut %shortcuts% "Google Drive" "--run --app --google-drive"
-call :shortcut %shortcuts% GRUB "--admin-center GRUB --terminal ~q~q --grub" %ComSpec%
-call :shortcut %shortcuts% ImgBurn "--run --imgburn" "%imgburn_exe_path%"
-:: call :shortcut %shortcuts% Kodi "--run --kodi" "%kodi_exe_path%"
-call :shortcut %shortcuts% Laragon "--run --laragon" "%laragon_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Calc" "--run --libreoffice --calc" "%libreoffice_scalc_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Impress" "--run --libreoffice --impress" "%libreoffice_simpress_exe_path%"
-call :shortcut %shortcuts% "LibreOffice Writer" "--run --libreoffice --writer" "%libreoffice_swriter_exe_path%"
-:: call :shortcut %shortcuts% LibreOffice "--run --libreoffice" "%libreoffice_soffice_exe_path%"
-call :shortcut %shortcuts% "MIDI Player" "--run --midi-player" "%midi_player_exe_path%"
-:: call :shortcut %shortcuts% "MinGit (admin)" "--admin-center MinGit --terminal ~q~q --mingit" "%ComSpec%"
-call :shortcut %shortcuts% MinGit "--center MinGit --terminal ~q~q --mingit" "%ComSpec%"
-:: call :shortcut %shortcuts% "Mozilla Thunderbird" "--run --thunderbird" "%thunderbird_exe_path%"
-call :shortcut %shortcuts% mpv "--run --mpv" "%mpv_exe_path%"
-:: call :shortcut %shortcuts% MuseScore "--run --musescore" "%musescore_exe_path%"
-call :shortcut %shortcuts% nano "--run --nano" %ComSpec%
-call :shortcut %shortcuts% ngrok "--center ngrok --ngrok" %ComSpec%
-:: call :shortcut %shortcuts% "Node.js (admin)" "--admin-center Node.js --terminal ~q~q --nodejs" "%nodejs_exe_path%"
-:: call :shortcut %shortcuts% Node.js "--center Node.js --terminal ~q~q --nodejs" "%nodejs_exe_path%"
-call :shortcut %shortcuts% Notepad++ "--run --notepad++" "%notepad_exe_path%"
-call :shortcut %shortcuts% OneDrive "--run --app --onedrive"
-:: call :shortcut %shortcuts% "Opera (private)" "--run --opera --private" "%opera_launcher_exe_path%"
-:: call :shortcut %shortcuts% "Opera GX (private)" "--run --opera_gx --private" "%opera_gx_launcher_exe_path%"
-call :shortcut %shortcuts% "Opera GX" "--run --opera_gx" "%opera_gx_launcher_exe_path%"
-call :shortcut %shortcuts% Opera "--run --opera" "%opera_launcher_exe_path%"
-call :shortcut %shortcuts% Outlook "--run --app --outlook"
-call :shortcut %shortcuts% PeaZip "--run --peazip" "%peazip_exe_path%"
-:: call :shortcut %shortcuts% "Permanently delete" "--center Permanently_delete --permanently-delete" %ComSpec%
-call :shortcut %shortcuts% PicPick "--run --picpick" "%picpick_exe_path%"
-call :shortcut %shortcuts% pngquant "--center pngquant --pngquant" %ComSpec%
-:: call :shortcut %shortcuts% "PortableGit (admin)" "--admin-center PortableGit --terminal ~q~q --portablegit" "%ComSpec%"
-call :shortcut %shortcuts% PortableGit "--center PortableGit --terminal ~q~q --portablegit" "%ComSpec%"
-call :shortcut %shortcuts% Superproxy "--run --superproxy"
-call :shortcut %shortcuts% Psiphon "--run --psiphon" "%psiphon_exe_path%"
-call :shortcut %shortcuts% REAPER "--run --reaper" "%reaper_exe_path%"
-call :shortcut %shortcuts% "Remote sync" "--center Remote_sync --remote-sync" %ComSpec%
-call :shortcut %shortcuts% Restore "--center Restore --restore" %ComSpec%
-call :shortcut %shortcuts% Sass "--center Sass --sass" %ComSpec%
-call :shortcut %shortcuts% "Server (stop)" "--run --server --stop" "%nginx_exe_path%"
-call :shortcut %shortcuts% Server "--center Server_-_Super --server" "%nginx_exe_path%"
-call :shortcut %shortcuts% Shortcuts "--center Shortcuts --shortcuts" %ComSpec%
-call :shortcut %shortcuts% Shotcut "--run --shotcut" "%shotcut_exe_path%"
-call :shortcut %shortcuts% Skype "--run --skype" "%skype_exe_path%"
-call :shortcut %shortcuts% Spotify "--run --app --spotify"
-call :shortcut %shortcuts% "Stream (audio)" "--center Stream_(audio) --stream --audio" %ComSpec%
-call :shortcut %shortcuts% Stream "--center Stream --stream" %ComSpec%
-call :shortcut %shortcuts% TeamViewer "--run --teamviewer" "%teamviewer_exe_path%"
-:: call :shortcut %shortcuts% Telegram "--run --telegram" "%telegram_exe_path%"
-call :shortcut %shortcuts% "Terminal (admin)" "--admin-center Terminal --terminal" %ComSpec%
-call :shortcut %shortcuts% Terminal "--center Terminal --terminal" %ComSpec%
-call :shortcut %shortcuts% TimeSync "--admin-run --timesync" "%timesync_exe_path%"
-call :shortcut %shortcuts% "Transcode (many)" "--center Transcode_(many) --transcode-many" %ComSpec%
-call :shortcut %shortcuts% "Transcode (one)" "--center Transcode_(one) --transcode-one" %ComSpec%
-call :shortcut %shortcuts% Update "--center Update --update" %ComSpec%
-call :shortcut %shortcuts% "Visual Studio Code" "--run --code" "%vscode_exe_path%"
-call :shortcut %shortcuts% "VLC media player" "--run --vlc" "%vlc_exe_path%"
-call :shortcut %shortcuts% "VNC Viewer" "--run --vnc-viewer" "%vnc_viewer_exe_path%"
-call :shortcut %shortcuts% WordWeb "--run --wordweb" "%wordweb_exe_path%"
-call :shortcut %shortcuts% "XAMPP (stop)" "--run --xampp --stop" "%xampp_stop_exe_path%"
-call :shortcut %shortcuts% XAMPP "--center XAMPP_-_Super --xampp" "%xampp_start_exe_path%"
-call :shortcut %shortcuts% "YouTube Music" "--run --app --youtube-music"
-call :shortcut %shortcuts% "YouTube on TV" "--run --app --youtube-on-tv"
-call :shortcut %shortcuts% YouTube "--run --app --youtube"
-call :shortcut %shortcuts% youtube-dl "--center youtube-dl --youtube-dl" %ComSpec%
+call :shortcut %shortcuts% 7-Zip "run 7-zip" "%sevenzip_exe_path%"
+call :shortcut %shortcuts% Audacity "run audacity" "%audacity_exe_path%"
+call :shortcut %shortcuts% Backup "center Backup backup" %ComSpec%
+call :shortcut %shortcuts% "BusyBox (admin)" "admin-center BusyBox terminal ~q~q --busybox" "%busybox_exe_path%"
+call :shortcut %shortcuts% BusyBox "center BusyBox terminal ~q~q --busybox" "%busybox_exe_path%"
+call :shortcut %shortcuts% CCleaner "admin-run ccleaner" "%ccleaner_exe_path%"
+call :shortcut %shortcuts% "CD ripper" "center CD_ripper cd-ripper" %ComSpec%
+call :shortcut %shortcuts% Checksum "center Checksum checksum" %ComSpec%
+:: call :shortcut %shortcuts% "Chrome (incognito)" "run chrome --incognito" "%chrome_exe_path%"
+call :shortcut %shortcuts% Chrome "run chrome" "%chrome_exe_path%"
+:: call :shortcut %shortcuts% "Chromium (incognito)" "run chromium --incognito" "%chromium_exe_path%"
+call :shortcut %shortcuts% Chromium "run chromium" "%chromium_exe_path%"
+call :shortcut %shortcuts% Delete "center Delete delete" %ComSpec%
+call :shortcut %shortcuts% Disconnect "run disconnect"
+call :shortcut %shortcuts% "Download (aria2)" "center Download_(aria2) download" %ComSpec%
+call :shortcut %shortcuts% "Download (curl)" "center Download_(curl) download --curl" %ComSpec%
+call :shortcut %shortcuts% "Download (Wget)" "center Download_(Wget) download --wget" %ComSpec%
+:: call :shortcut %shortcuts% Download "center Download download" %ComSpec%
+:: call :shortcut %shortcuts% "Edge (InPrivate)" "run edge --inprivate" "%edge_exe_path%"
+call :shortcut %shortcuts% Edge "run edge" "%edge_exe_path%"
+call :shortcut %shortcuts% "f.lux (stop)" "run flux --stop" "%flux_exe_path%"
+call :shortcut %shortcuts% f.lux "run flux" "%flux_exe_path%"
+call :shortcut %shortcuts% FileZilla "run filezilla" "%filezilla_exe_path%"
+:: call :shortcut %shortcuts% "Firefox (private)" "run firefox --private" "%firefox_exe_path%"
+call :shortcut %shortcuts% Firefox "run firefox" "%firefox_exe_path%"
+call :shortcut %shortcuts% foobar2000 "run foobar2000" "%foobar2000_exe_path%"
+call :shortcut %shortcuts% GIMP "run gimp" "%gimp_exe_path%"
+call :shortcut %shortcuts% Gmail "run app --gmail"
+call :shortcut %shortcuts% "Google Drive" "run app --google-drive"
+call :shortcut %shortcuts% GRUB "admin-center GRUB terminal ~q~q --grub" %ComSpec%
+call :shortcut %shortcuts% ImgBurn "run imgburn" "%imgburn_exe_path%"
+:: call :shortcut %shortcuts% Kodi "run kodi" "%kodi_exe_path%"
+call :shortcut %shortcuts% Laragon "run laragon" "%laragon_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Calc" "run libreoffice --calc" "%libreoffice_scalc_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Impress" "run libreoffice --impress" "%libreoffice_simpress_exe_path%"
+call :shortcut %shortcuts% "LibreOffice Writer" "run libreoffice --writer" "%libreoffice_swriter_exe_path%"
+:: call :shortcut %shortcuts% LibreOffice "run libreoffice" "%libreoffice_soffice_exe_path%"
+call :shortcut %shortcuts% "MIDI Player" "run midi-player" "%midi_player_exe_path%"
+:: call :shortcut %shortcuts% "MinGit (admin)" "admin-center MinGit terminal ~q~q --mingit" "%ComSpec%"
+call :shortcut %shortcuts% MinGit "center MinGit terminal ~q~q --mingit" "%ComSpec%"
+:: call :shortcut %shortcuts% "Mozilla Thunderbird" "run thunderbird" "%thunderbird_exe_path%"
+call :shortcut %shortcuts% mpv "run mpv" "%mpv_exe_path%"
+:: call :shortcut %shortcuts% MuseScore "run musescore" "%musescore_exe_path%"
+call :shortcut %shortcuts% nano "run nano" %ComSpec%
+call :shortcut %shortcuts% ngrok "center ngrok ngrok" %ComSpec%
+:: call :shortcut %shortcuts% "Node.js (admin)" "admin-center Node.js terminal ~q~q --nodejs" "%nodejs_exe_path%"
+:: call :shortcut %shortcuts% Node.js "center Node.js terminal ~q~q --nodejs" "%nodejs_exe_path%"
+call :shortcut %shortcuts% Notepad++ "run notepad++" "%notepad_exe_path%"
+call :shortcut %shortcuts% OneDrive "run app --onedrive"
+:: call :shortcut %shortcuts% "Opera (private)" "run opera --private" "%opera_launcher_exe_path%"
+:: call :shortcut %shortcuts% "Opera GX (private)" "run opera_gx --private" "%opera_gx_launcher_exe_path%"
+call :shortcut %shortcuts% "Opera GX" "run opera_gx" "%opera_gx_launcher_exe_path%"
+call :shortcut %shortcuts% Opera "run opera" "%opera_launcher_exe_path%"
+call :shortcut %shortcuts% Outlook "run app --outlook"
+call :shortcut %shortcuts% PeaZip "run peazip" "%peazip_exe_path%"
+:: call :shortcut %shortcuts% "Permanently delete" "center Permanently_delete permanently-delete" %ComSpec%
+call :shortcut %shortcuts% PicPick "run picpick" "%picpick_exe_path%"
+call :shortcut %shortcuts% pngquant "center pngquant pngquant" %ComSpec%
+:: call :shortcut %shortcuts% "PortableGit (admin)" "admin-center PortableGit terminal ~q~q --portablegit" "%ComSpec%"
+call :shortcut %shortcuts% PortableGit "center PortableGit terminal ~q~q --portablegit" "%ComSpec%"
+call :shortcut %shortcuts% Superproxy "run superproxy"
+call :shortcut %shortcuts% Psiphon "run psiphon" "%psiphon_exe_path%"
+call :shortcut %shortcuts% REAPER "run reaper" "%reaper_exe_path%"
+call :shortcut %shortcuts% "Remote sync" "center Remote_sync remote-sync" %ComSpec%
+call :shortcut %shortcuts% Restore "center Restore restore" %ComSpec%
+call :shortcut %shortcuts% Sass "center Sass sass" %ComSpec%
+call :shortcut %shortcuts% "Server (stop)" "run server --stop" "%nginx_exe_path%"
+call :shortcut %shortcuts% Server "center Server_-_Super server" "%nginx_exe_path%"
+call :shortcut %shortcuts% Shortcuts "center Shortcuts shortcuts" %ComSpec%
+call :shortcut %shortcuts% Shotcut "run shotcut" "%shotcut_exe_path%"
+call :shortcut %shortcuts% Skype "run skype" "%skype_exe_path%"
+call :shortcut %shortcuts% Spotify "run app --spotify"
+call :shortcut %shortcuts% "Stream (audio)" "center Stream_(audio) stream --audio" %ComSpec%
+call :shortcut %shortcuts% Stream "center Stream stream" %ComSpec%
+call :shortcut %shortcuts% TeamViewer "run teamviewer" "%teamviewer_exe_path%"
+:: call :shortcut %shortcuts% Telegram "run telegram" "%telegram_exe_path%"
+call :shortcut %shortcuts% "Terminal (admin)" "admin-center Terminal terminal" %ComSpec%
+call :shortcut %shortcuts% Terminal "center Terminal terminal" %ComSpec%
+call :shortcut %shortcuts% TimeSync "admin-run timesync" "%timesync_exe_path%"
+call :shortcut %shortcuts% "Transcode (many)" "center Transcode_(many) transcode-many" %ComSpec%
+call :shortcut %shortcuts% "Transcode (one)" "center Transcode_(one) transcode-one" %ComSpec%
+call :shortcut %shortcuts% Update "center Update update" %ComSpec%
+call :shortcut %shortcuts% "Visual Studio Code" "run code" "%vscode_exe_path%"
+call :shortcut %shortcuts% "VLC media player" "run vlc" "%vlc_exe_path%"
+call :shortcut %shortcuts% "VNC Viewer" "run vnc-viewer" "%vnc_viewer_exe_path%"
+call :shortcut %shortcuts% WordWeb "run wordweb" "%wordweb_exe_path%"
+call :shortcut %shortcuts% "XAMPP (stop)" "run xampp --stop" "%xampp_stop_exe_path%"
+call :shortcut %shortcuts% XAMPP "center XAMPP_-_Super xampp" "%xampp_start_exe_path%"
+call :shortcut %shortcuts% "YouTube Music" "run app --youtube-music"
+call :shortcut %shortcuts% "YouTube on TV" "run app --youtube-on-tv"
+call :shortcut %shortcuts% YouTube "run app --youtube"
+call :shortcut %shortcuts% youtube-dl "center youtube-dl youtube-dl" %ComSpec%
 goto end
 
 :shotcut
@@ -2327,7 +2338,7 @@ if not %process_status% == 0 (
 	start "" "%shotcut_exe_path%"!input!
 	goto end
 )
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%shotcut_exe_path%" --noupgrade --gpu --clear-recent --appdata %shotcut_data_dir%%input% & reg delete "%hkcu_software_qtproject%" /f & %this% --speak "Shotcut was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%shotcut_exe_path%" --noupgrade --gpu --clear-recent --appdata %shotcut_data_dir%%input% & reg delete "%hkcu_software_qtproject%" /f & %this% speak "Shotcut was closed"">nul 2>&1
 goto end
 
 :skype
@@ -2345,10 +2356,10 @@ set skype_command=echo.
 if %is_admin% == 0 set skype_command=rd "%skype_data_dir%" /q /s
 if exist "%local_skype%" goto skype_default
 if exist "%local_skype_x86%" goto skype_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_skype%" Skype_Backup & ren "%skype_for_desktop_datapath%" "Skype for Desktop_Backup" & "%skype_exe_path%"%input% --datapath="%skype_data_dir%" & %skype_command:ampersand=&% & rd "%appdata_skype%" "%skype_for_desktop_datapath%" /q /s & ren "%appdata_skype%_Backup" Skype & ren "%skype_for_desktop_datapath%_Backup" "Skype for Desktop" & reg delete %hkcu_startup% /v "Skype for Desktop" /f & %this% --speak "Skype was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%appdata_skype%" Skype_Backup & ren "%skype_for_desktop_datapath%" "Skype for Desktop_Backup" & "%skype_exe_path%"%input% --datapath="%skype_data_dir%" & %skype_command:ampersand=&% & rd "%appdata_skype%" "%skype_for_desktop_datapath%" /q /s & ren "%appdata_skype%_Backup" Skype & ren "%skype_for_desktop_datapath%_Backup" "Skype for Desktop" & reg delete %hkcu_startup% /v "Skype for Desktop" /f & %this% speak "Skype was closed"">nul 2>&1
 goto end
 :skype_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%skype_exe_path%"%input% --datapath="%skype_data_dir%" & %this% --speak "Skype was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%skype_exe_path%"%input% --datapath="%skype_data_dir%" & %this% speak "Skype was closed"">nul 2>&1
 goto end
 
 :speak
@@ -2364,7 +2375,7 @@ set second=%2
 set third=%3
 set fourth=%4
 set fifth=%5
-if defined first set first=%first:--=:%
+if defined first set first=:%first:--=%
 if defined second set second= %second%
 if defined third set third= %third%
 if defined fourth set fourth= %fourth%
@@ -2381,7 +2392,7 @@ call :sanitize startup "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 if [%1] == [--disable] goto startup_disable
 :: call :flux
 call :server "%USERPROFILE%"
-call :shortcut %startup% Startup "--run --startup"
+call :shortcut %startup% Startup "run startup"
 goto end
 :startup_disable
 :: call :flux-stop
@@ -2407,7 +2418,7 @@ call :mpv_config
 echo.
 echo Playing: %input_url:escape_ampersand=^&%
 echo.
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%mpv_exe_path%" %input_url:escape_ampersand=^&% & %this% --speak "mpv was closed""
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%mpv_exe_path%" %input_url:escape_ampersand=^&% & %this% speak "mpv was closed""
 goto stream_input_url
 
 :superproxy
@@ -2420,10 +2431,10 @@ call :require TeamViewer
 call :check-process %teamviewer_exe% TeamViewer
 if not %process_status% == 0 goto end
 if exist "%local_teamviewer_exe_path%" goto teamviewer_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & rd "%localappdata_teamviewer%" /q /s & ren "%appdata_teamviewer%" TeamViewer_Backup & "%teamviewer_exe_path%" & rd "%localappdata_teamviewer%" "%appdata_teamviewer%" /q /s & ren "%appdata_teamviewer%_Backup" TeamViewer & reg delete %hkcu_software_teamviewer% /f & %this% --speak "TeamViewer was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & rd "%localappdata_teamviewer%" /q /s & ren "%appdata_teamviewer%" TeamViewer_Backup & "%teamviewer_exe_path%" & rd "%localappdata_teamviewer%" "%appdata_teamviewer%" /q /s & ren "%appdata_teamviewer%_Backup" TeamViewer & reg delete %hkcu_software_teamviewer% /f & %this% speak "TeamViewer was closed"">nul 2>&1
 goto end
 :teamviewer_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%local_teamviewer_exe_path%" & %this% --speak "TeamViewer was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%local_teamviewer_exe_path%" & %this% speak "TeamViewer was closed"">nul 2>&1
 goto end
 
 :telegram
@@ -2438,10 +2449,10 @@ if not %process_status% == 0 (
 )
 call :md "%telegram_data_dir%"
 if exist %local_telegram% goto telegram_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%telegram_exe_path%"%input% -externalupdater -workdir "%telegram_data_dir%" & reg delete %hkcu_software_telegram% /f & %this% --speak "Telegram was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%telegram_exe_path%"%input% -externalupdater -workdir "%telegram_data_dir%" & reg delete %hkcu_software_telegram% /f & %this% speak "Telegram was closed"">nul 2>&1
 goto end
 :telegram_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%telegram_exe_path%"%input% -externalupdater -workdir "%telegram_data_dir%" & %this% --speak "Telegram was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%telegram_exe_path%"%input% -externalupdater -workdir "%telegram_data_dir%" & %this% speak "Telegram was closed"">nul 2>&1
 goto end
 
 :terminal
@@ -2465,7 +2476,7 @@ if [%2] == [--portablegit] (
 	call :require PortableGit
 	set PATH=%apps_dir%\PortableGit\App\cmd;%apps_dir%\PortableGit\App\mingw%mingw%\bin;%apps_dir%\PortableGit\App\usr\bin;%PATH:)=^)%
 )
-doskey open=%this% --open $*
+doskey open=%this% open $*
 prompt $p$_$$$s
 cd /d %home_dir%
 if [%2] == [--grub] (
@@ -2496,10 +2507,10 @@ set thunderbird_command=echo.
 if %is_admin% == 0 set thunderbird_command=rd "%thunderbird_data_dir%" /q /s
 if exist "%local_thunderbird%" goto thunderbird_default
 if exist "%local_thunderbird_x86%" goto thunderbird_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_thunderbird%" Thunderbird_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%appdata_thunderbird%" Thunderbird_Backup & "%thunderbird_exe_path%" -profile "%thunderbird_data_dir%" & rd "%localappdata_thunderbird%" /q /s & ren "%localappdata_thunderbird%_Backup" Thunderbird & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%appdata_thunderbird%" /q /s & ren "%appdata_thunderbird%_Backup" Thunderbird & if %is_admin% == 1 rd "%localappdata_thunderbird%" "%appdata_mozilla%" "%appdata_thunderbird%" /q /s & %thunderbird_command% & reg delete %hkcu_software_thunderbird% /f & %this% --clear-recent-items & %this% --speak "Thunderbird was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & ren "%localappdata_thunderbird%" Thunderbird_Backup & ren "%appdata_mozilla%" Mozilla_Backup & ren "%appdata_thunderbird%" Thunderbird_Backup & "%thunderbird_exe_path%" -profile "%thunderbird_data_dir%" & rd "%localappdata_thunderbird%" /q /s & ren "%localappdata_thunderbird%_Backup" Thunderbird & rd "%appdata_mozilla%" /q /s & ren "%appdata_mozilla%_Backup" Mozilla & rd "%appdata_thunderbird%" /q /s & ren "%appdata_thunderbird%_Backup" Thunderbird & if %is_admin% == 1 rd "%localappdata_thunderbird%" "%appdata_mozilla%" "%appdata_thunderbird%" /q /s & %thunderbird_command% & reg delete %hkcu_software_thunderbird% /f & %this% clear-recent-items & %this% speak "Thunderbird was closed"">nul 2>&1
 goto end
 :thunderbird_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%thunderbird_exe_path%" -profile "%thunderbird_data_dir%" & %thunderbird_command% & %this% --clear-recent-items & %this% --speak "Thunderbird was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%thunderbird_exe_path%" -profile "%thunderbird_data_dir%" & %thunderbird_command% & %this% clear-recent-items & %this% speak "Thunderbird was closed"">nul 2>&1
 goto end
 
 :timesync
@@ -2515,7 +2526,7 @@ if not exist TimeSync (
 )
 cd TimeSync
 cd App
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & del %timesync_config% & %timesync_exe% & del %timesync_config% & %this% --speak "TimeSync was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & del %timesync_config% & %timesync_exe% & del %timesync_config% & %this% speak "TimeSync was closed"">nul 2>&1
 cd..
 cd..
 popd
@@ -2823,10 +2834,10 @@ call :md "%vlc_config_dir%"
 if exist "%vlc_data_dir%" robocopy "%vlc_data_dir%" "%vlc_config_dir%" /mir>nul 2>&1
 if exist "%local_vlc%" goto vlc_default
 if exist "%local_vlc_x86%" goto vlc_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vlc_exe_path%"%vlc_options%%input% & %vlc_command% & rd "%vlc_config_dir%" /q /s & reg delete "%hkcu_software_qtproject%" /f & %this% --speak "VLC media player was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vlc_exe_path%"%vlc_options%%input% & %vlc_command% & rd "%vlc_config_dir%" /q /s & reg delete "%hkcu_software_qtproject%" /f & %this% speak "VLC media player was closed"">nul 2>&1
 goto end
 :vlc_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vlc_exe_path%"%vlc_options%%input% & %vlc_command% & rd "%vlc_config_dir%" /q /s & %this% --speak "VLC media player was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vlc_exe_path%"%vlc_options%%input% & %vlc_command% & rd "%vlc_config_dir%" /q /s & %this% speak "VLC media player was closed"">nul 2>&1
 goto end
 
 :vnc-viewer
@@ -2837,10 +2848,10 @@ if not %process_status% == 0 (
 	goto end
 )
 if exist "%local_vnc_viewer%" goto vnc-viewer_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vnc_viewer_exe_path%" -_SplashVer=1 -EnableAnalytics=0 -EulaAccepted="191331e524ab1bb95b76469148f042a0c81c2057" -FullScreen="True" -WarnUnencrypted=0 & if not exist "%local_vnc_server%" reg delete %hkcu_software_realvnc% /f & if not exist "%local_vnc_server%" rd "%localappdata_realvnc%" /q /s & if not exist "%local_vnc_server%" rd "%appdata_realvnc%" /q /s & %this% --speak "VNC Viewer was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vnc_viewer_exe_path%" -_SplashVer=1 -EnableAnalytics=0 -EulaAccepted="191331e524ab1bb95b76469148f042a0c81c2057" -FullScreen="True" -WarnUnencrypted=0 & if not exist "%local_vnc_server%" reg delete %hkcu_software_realvnc% /f & if not exist "%local_vnc_server%" rd "%localappdata_realvnc%" /q /s & if not exist "%local_vnc_server%" rd "%appdata_realvnc%" /q /s & %this% speak "VNC Viewer was closed"">nul 2>&1
 goto end
 :vnc-viewer_default
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vnc_viewer_exe_path% & %this% --speak "VNC Viewer was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%vnc_viewer_exe_path% & %this% speak "VNC Viewer was closed"">nul 2>&1
 goto end
 
 :wait
@@ -2877,7 +2888,7 @@ goto end
 call :require Wordweb
 call :check-process %wordweb_exe% Wordweb
 if not %process_status% == 0 goto end
-start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%wordweb_exe_path%" & %this% --speak "WordWeb was closed"">nul 2>&1
+start "%0" cmd /c "nircmd win center title %0 & nircmd win min title %0 & nircmd win hide title %0 & "%wordweb_exe_path%" & %this% speak "WordWeb was closed"">nul 2>&1
 goto end
 
 :wrapper
@@ -2887,7 +2898,7 @@ set third=%3
 set fourth=%4
 if defined first set first=%first:"=%
 set first=%first:_= %
-if defined second set second=%second:--=:%
+if defined second set second=:%second:--=%
 if [%second%] == [%0] goto end
 if defined third set third= %third%
 if defined fourth set fourth= %fourth%
@@ -3012,7 +3023,7 @@ if /i not "%input_url:youtube.com=%" == "%input_url%" (
 )
 call :escape input_url "%input_url:"=%"
 pushd %location%
-if /i [%format%] == [tv] set options=!options:%format%="(137/136/135/134/133/160)+bestaudio"! -k --exec "%this% --transcode {} %format% & del {}"
+if /i [%format%] == [tv] set options=!options:%format%="(137/136/135/134/133/160)+bestaudio"! -k --exec "%this% transcode {} %format% & del {}"
 echo.
 youtube-dl%options% -o %output_file% %input_url:escape_ampersand=^&% --external-downloader aria2c --no-cache-dir --no-check-certificate --external-downloader-args "--max-connection-per-server=16 --remote-time=true"
 rd TV>nul 2>&1
