@@ -1077,11 +1077,13 @@ set app_label=%0
 set app_label=%app_label::=%
 call :require LibreOffice
 call :sanitize input %1
-if not [%1] == [] (
-	if [%1] == [reset] goto libreoffice_reset
+set first=%1
+if defined first (
+	if "%first:~0,2%" == "--" set first=%first:--=%
+	if [!first!] == [reset] goto libreoffice_reset
 	for %%i in (calc, impress, writer) do (
-		if /i [%%i] == [%1] (
-			set app_mode=--%1
+		if /i [%%i] == [!first!] (
+			set app_mode=--!first!
 			call :sanitize input %2
 		)
 	)
