@@ -48,7 +48,7 @@ set https_proxy=
 set start_page=about:blank
 set chrome_proxy_settings=
 set vlc_proxy_settings=
-set user_agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0
+:: set user_agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0
 :: if not defined ProgramFiles(x86) set user_agent=%user_agent:Win64; x64=WOW64%
 set bit=64
 set ccleaner=64
@@ -1078,14 +1078,16 @@ set app_label=%app_label::=%
 call :require LibreOffice
 call :sanitize input %1
 if not [%1] == [] (
-	set first=%1
-	if [!first!] == [reset] goto libreoffice_reset
-	set app_mode=!first!
-	if not "!app_mode:~0,2!" == "--" set app_mode=--!app_mode!
-	call :sanitize input %2
+	if [%1] == [reset] goto libreoffice_reset
+	for %%i in (calc, impress, writer) do (
+		if /i [%%i] == [%1] (
+			set app_mode=--%1
+			call :sanitize input %2
+		)
+	)
 )
-if not defined input set input=%app_mode%
 if defined input set input= %input:&=^&%
+if defined app_mode set input= %app_mode%%input%
 call :check-process "%libreoffice_exe_path%" LibreOffice
 if not %process_status% == 0 (
 	if defined input set input=%input:^=%
