@@ -2784,6 +2784,7 @@ pushd "%apps_dir%"
 aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true http://www.cross-plus-a.com/balcon.zip
 :: aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://frippery.org/files/busybox/busybox.exe
 aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://frippery.org/files/busybox/busybox64.exe
+:: aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://getcomposer.org/composer-stable.phar
 aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z
 aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://justgetflux.com/flux-setup.exe
 aria2c --check-certificate=false --conditional-get=true --dir="%dependencies_dir%\Downloads" --max-connection-per-server=16 --remote-time=true https://www.apple.com/itunes/download/win64
