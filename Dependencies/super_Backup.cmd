@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set cmd_color=f0
+:: set cmd_color=f0
 set this=%~f0
 if not "%this: =%" == "%this%" set this="%this%"
 set this_backup=%~dp0%~n0_Backup%~x0
@@ -87,7 +87,7 @@ set archive=%self%.zip
 set list=%self%.txt
 set setup=%scripts%\%self%_Setup.cmd
 if "%PATH:~-1%" == ";" set PATH=%PATH:~0,-1%
-if not defined SUPER_PATH set SUPER_PATH=%apps_dir%;%apps_dir%\7-Zip\App;%apps_dir%\aria2\App;%apps_dir%\balcon\App;%apps_dir%\curl\App\bin;%apps_dir%\FFmpeg\App\bin;%apps_dir%\FLAC\App;%apps_dir%\FluidSynth\App\bin;%apps_dir%\foobar2000\App\encoders;%apps_dir%\HTTrack\App\httrack;%apps_dir%\LAME\App;%apps_dir%\MediaInfo\App;%apps_dir%\MPlayer\App;%apps_dir%\mpv\App;%apps_dir%\nano\App\%nano%-w64-mingw32\bin;%apps_dir%\ngrok\App;%apps_dir%\NirCmd\App;%apps_dir%\Server\App\MariaDB\bin;%apps_dir%\Server\App\PHP;%apps_dir%\Node.js\App;%apps_dir%\png2ico\App;%apps_dir%\pngquant\App;%apps_dir%\qaac\App;%apps_dir%\Ruby\App\bin;%apps_dir%\Sass\App;%apps_dir%\Shotcut\App;%apps_dir%\VNC_Viewer\App;%apps_dir%\Wget\App;%apps_dir%\XAMPP\App\php;%apps_dir%\youtube-dl\App;%apps_dir%\CommonFiles\Microsoft_Visual_C++_2015-2019_Redistributable;%PATH%;
+if not defined SUPER_PATH set SUPER_PATH=%apps_dir%;%apps_dir%\7-Zip\App;%apps_dir%\aria2\App;%apps_dir%\balcon\App;%apps_dir%\Composer\App;%apps_dir%\curl\App\bin;%apps_dir%\FFmpeg\App\bin;%apps_dir%\FLAC\App;%apps_dir%\FluidSynth\App\bin;%apps_dir%\foobar2000\App\encoders;%apps_dir%\HTTrack\App\httrack;%apps_dir%\LAME\App;%apps_dir%\MediaInfo\App;%apps_dir%\MPlayer\App;%apps_dir%\mpv\App;%apps_dir%\nano\App\%nano%-w64-mingw32\bin;%apps_dir%\ngrok\App;%apps_dir%\NirCmd\App;%apps_dir%\Server\App\MariaDB\bin;%apps_dir%\Server\App\PHP;%apps_dir%\Node.js\App;%apps_dir%\png2ico\App;%apps_dir%\pngquant\App;%apps_dir%\qaac\App;%apps_dir%\Ruby\App\bin;%apps_dir%\Sass\App;%apps_dir%\Shotcut\App;%apps_dir%\VNC_Viewer\App;%apps_dir%\Wget\App;%apps_dir%\XAMPP\App\php;%apps_dir%\youtube-dl\App;%apps_dir%\CommonFiles\Microsoft_Visual_C++_2015-2019_Redistributable;%PATH%;
 set PATH=%SUPER_PATH%
 goto main
 
@@ -1545,6 +1545,18 @@ type nul>%file%
 del %file%
 goto permanently-delete
 
+:php-configuration
+call :require BusyBox
+call :require PHP
+pushd "%apps_dir%"
+if not exist Server\App\PHP\php.ini-development goto php-configuration_end
+pushd Server\App\PHP
+%apps_dir%\BusyBox\App\sed.exe "s/max_execution_time = 30/max_execution_time = 120/;s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/;s/;extension=mysqli/extension=mysqli/;s/;extension_dir = \"ext\"/extension_dir = \"%apps_dir:\=\\%\\Server\\App\\PHP\\ext\"/;s/;extension=fileinfo/extension=fileinfo/;s/;extension=mbstring/extension=mbstring/;s/;extension=openssl/extension=openssl/" php.ini-development>php.ini
+popd
+:php-configuration_end
+popd
+goto end
+
 :picpick
 call :require PicPick
 call :sanitize input %1
@@ -2176,6 +2188,7 @@ if defined chrome_profile (
 	set chromium_switches=!chromium_switches: --profile-directory=!
 	set edge_switches=!edge_switches: --profile-directory=!
 )
+call :php-configuration
 goto end
 
 :setup
